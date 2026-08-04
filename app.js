@@ -406,7 +406,26 @@
                 password: password,
                 options: { data: { full_name: name } }
             });
-            if (res.error) throw res.error;
+
+            if (res.error) {
+                var errStr = res.error.message.toLowerCase();
+                if (errStr.includes('already registered') || errStr.includes('already in use') || errStr.includes('already exists')) {
+                    showToast('This email is already registered! Directing to Sign In...', 'info');
+                    document.getElementById('login-email').value = email;
+                    showView('view-teacher-login');
+                    return;
+                }
+                throw res.error;
+            }
+
+            // Supabase returns identities: [] if email enumeration prevention is ON and user already exists
+            if (res.data && res.data.user && res.data.user.identities && res.data.user.identities.length === 0) {
+                showToast('This email is already registered! Please sign in instead.', 'info');
+                document.getElementById('login-email').value = email;
+                showView('view-teacher-login');
+                return;
+            }
+
             showView('view-confirm-email');
             resetSignupForm();
         } catch (err) {
