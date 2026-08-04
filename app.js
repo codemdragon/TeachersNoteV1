@@ -4,21 +4,26 @@
 
 (function () {
     // Configuration & Environment Variables Fallback
-    var SUPABASE_URL = (typeof window !== 'undefined' && window.NEXT_PUBLIC_SUPABASE_URL) || 'https://rnqxxzsrnohppahmmkwf.supabase.co';
-    var SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.NEXT_PUBLIC_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJucXh4enNybm9ocHBhaG1ta3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MTg1MjAsImV4cCI6MjA5MTI5NDUyMH0.Tpf93FkyULwWrjRi8sZhiL3JZj0_rgOmkldYoDK1eRk';
+    var SUPABASE_URL = (typeof window !== 'undefined' && window.NEXT_PUBLIC_SUPABASE_URL && window.NEXT_PUBLIC_SUPABASE_URL.trim()) ? window.NEXT_PUBLIC_SUPABASE_URL.trim() : 'https://rnqxxzsrnohppahmmkwf.supabase.co';
+    var SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.NEXT_PUBLIC_SUPABASE_ANON_KEY && window.NEXT_PUBLIC_SUPABASE_ANON_KEY.trim()) ? window.NEXT_PUBLIC_SUPABASE_ANON_KEY.trim() : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJucXh4enNybm9ocHBhaG1ta3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MTg1MjAsImV4cCI6MjA5MTI5NDUyMH0.Tpf93FkyULwWrjRi8sZhiL3JZj0_rgOmkldYoDK1eRk';
 
-    var CLOUDINARY_CLOUD_NAME = (typeof window !== 'undefined' && window.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) || 'yzxdjnkr';
-    var CLOUDINARY_UPLOAD_PRESET = (typeof window !== 'undefined' && window.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) || 'uwduiwd';
+    var CLOUDINARY_CLOUD_NAME = (typeof window !== 'undefined' && window.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME && window.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME.trim()) ? window.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME.trim() : 'yzxdjnkr';
+    var CLOUDINARY_UPLOAD_PRESET = (typeof window !== 'undefined' && window.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET && window.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET.trim()) ? window.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET.trim() : 'uwduiwd';
 
     var ADMIN_EMAIL = 'codemlabs1@gmail.com';
 
-    // Initialize Supabase Client (PKCE flow for robust session establishment)
+    // Initialize Supabase Client (PKCE flow with explicit apikey header)
     window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
             flowType: 'pkce',
             autoRefreshToken: true,
             persistSession: true,
             detectSessionInUrl: true
+        },
+        global: {
+            headers: {
+                apikey: SUPABASE_ANON_KEY
+            }
         }
     });
 
