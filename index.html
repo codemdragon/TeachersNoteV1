@@ -3,9 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Teachers Note - Digital Classroom Platform</title>
-    <meta name="description" content="Teachers Note is a modern digital classroom platform for sharing course materials, organizing topics, and managing student access.">
+    <meta name="description"
+        content="Teachers Note is a modern digital classroom platform for sharing course materials, organizing topics, and managing student access.">
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,9 +67,21 @@
 
             <!-- Mobile Top Header (< 768px) -->
             <header class="mobile-header" id="mobile-header">
-                <div class="logo" style="display:flex; align-items:center; gap:10px;">
-                    <img src="assets/app-icon.png" alt="Teachers Note Icon" class="brand-app-icon" style="width:32px; height:32px; border-radius:8px;">
-                    <div class="logo-text" style="font-size:1.05rem;">Teachers <span>Note</span></div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <!-- Hamburger: only visible when authenticated -->
+                    <button id="mobile-hamburger-btn" aria-label="Open menu" onclick="toggleMobileNav()">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="logo" style="display:flex; align-items:center; gap:8px; margin-bottom:0;">
+                        <img src="assets/app-icon.png" alt="Teachers Note Icon" class="brand-app-icon"
+                            style="width:30px; height:30px; border-radius:8px;">
+                        <div class="logo-text" style="font-size:1.05rem;">Teachers <span>Note</span></div>
+                    </div>
                 </div>
                 <button id="mobile-signout-btn" onclick="handleSignOut()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,14 +92,66 @@
                 </button>
             </header>
 
+            <!-- Mobile Nav Drawer Backdrop -->
+            <div id="mobile-nav-backdrop" class="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
+
+            <!-- Mobile Nav Drawer -->
+            <nav id="mobile-nav-drawer" class="mobile-nav-drawer" aria-label="Mobile navigation">
+                <div class="mobile-drawer-header">
+                    <div class="logo" style="margin-bottom:0;">
+                        <img src="assets/app-icon.png" alt="Teachers Note Icon" class="brand-app-icon"
+                            style="width:34px;height:34px;border-radius:8px;">
+                        <div class="logo-text">Teachers <span>Note</span></div>
+                    </div>
+                    <button class="mobile-drawer-close" onclick="closeMobileNav()" aria-label="Close menu">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="sidebar-section-label" style="margin-top:1rem;">Workspace</div>
+                <ul class="nav-menu" id="mobile-nav-menu">
+                    <!-- Injected dynamically -->
+                </ul>
+                <div class="sidebar-footer" style="margin-top:auto;">
+                    <div class="class-badge-box" id="mobile-sidebar-class-badge" style="display:none;">
+                        <label>Class Code</label>
+                        <div class="code-val" id="mobile-sidebar-code-text">------</div>
+                    </div>
+                    <div class="sidebar-profile" id="mobile-sidebar-profile">
+                        <div class="profile-avatar" id="mobile-sidebar-avatar">T</div>
+                        <div class="profile-meta">
+                            <span class="profile-name" id="mobile-sidebar-user-name">Teacher</span>
+                            <span class="profile-role" id="mobile-sidebar-user-role">Teacher Account</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline sign-out-btn" onclick="handleSignOut()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+            </nav>
+
             <!-- Desktop Top Bar (>= 768px, shown only once authenticated) -->
             <header class="desktop-topbar" id="desktop-topbar">
                 <div class="topbar-breadcrumb" id="topbar-breadcrumb">
                     <span>Dashboard</span>
                 </div>
                 <div class="topbar-right" id="topbar-right">
-                    <div class="topbar-pill" id="topbar-pending-pill" style="display:none;" onclick="showView('view-manage-students'); loadStudents('pending');">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <div class="topbar-pill" id="topbar-pending-pill" style="display:none;"
+                        onclick="showView('view-manage-students'); loadStudents('pending');">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
                         <span><span class="pill-count">0</span> pending approval</span>
                     </div>
                 </div>
@@ -108,15 +173,18 @@
                             </div>
 
                             <h2 id="auth-brand-title">A digital classroom for sharing knowledge.</h2>
-                            <p id="auth-brand-subtitle">Organize subjects and topics, share materials, and manage class access — all in one place.</p>
+                            <p id="auth-brand-subtitle">Organize subjects and topics, share materials, and manage class
+                                access — all in one place.</p>
 
                             <ul class="auth-brand-features" id="auth-brand-features">
                                 <!-- Injected dynamically per view -->
                             </ul>
 
                             <div class="auth-brand-illustration">
-                                <svg width="280" height="170" viewBox="0 0 280 170" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="18" y="14" width="180" height="120" rx="14" fill="var(--bg-surface)" stroke="var(--border)" stroke-width="1.5"></rect>
+                                <svg width="280" height="170" viewBox="0 0 280 170" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="18" y="14" width="180" height="120" rx="14" fill="var(--bg-surface)"
+                                        stroke="var(--border)" stroke-width="1.5"></rect>
                                     <rect x="18" y="14" width="180" height="26" rx="14" fill="var(--bg-input)"></rect>
                                     <circle cx="34" cy="27" r="4" fill="var(--danger)" opacity="0.6"></circle>
                                     <circle cx="48" cy="27" r="4" fill="var(--accent)" opacity="0.6"></circle>
@@ -124,10 +192,13 @@
                                     <rect x="34" y="56" width="80" height="10" rx="4" fill="var(--border)"></rect>
                                     <rect x="34" y="74" width="140" height="8" rx="4" fill="var(--border-light)"></rect>
                                     <rect x="34" y="90" width="110" height="8" rx="4" fill="var(--border-light)"></rect>
-                                    <rect x="34" y="106" width="60" height="18" rx="6" fill="var(--accent-glow)" stroke="var(--accent)" stroke-width="1.2"></rect>
+                                    <rect x="34" y="106" width="60" height="18" rx="6" fill="var(--accent-glow)"
+                                        stroke="var(--accent)" stroke-width="1.2"></rect>
                                     <circle cx="226" cy="100" r="36" fill="var(--accent-glow)"></circle>
-                                    <path d="M212 100 l10 10 l22 -22" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-                                    <rect x="196" y="8" width="66" height="46" rx="10" fill="var(--bg-surface)" stroke="var(--border)" stroke-width="1.5"></rect>
+                                    <path d="M212 100 l10 10 l22 -22" stroke="var(--accent)" stroke-width="5"
+                                        stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                                    <rect x="196" y="8" width="66" height="46" rx="10" fill="var(--bg-surface)"
+                                        stroke="var(--border)" stroke-width="1.5"></rect>
                                     <path d="M220 24 l14 8 l-14 8 z" fill="var(--info)"></path>
                                 </svg>
                             </div>
@@ -140,12 +211,14 @@
                         <section id="view-role" class="auth-inner-view active">
                             <div class="auth-centered-wrapper">
                                 <h1>Welcome to<br>Teachers <span class="accent">Note</span>.</h1>
-                                <p class="subtitle">Your digital classroom for sharing knowledge and notes. Choose your role to get started.</p>
+                                <p class="subtitle">Your digital classroom for sharing knowledge and notes. Choose your
+                                    role to get started.</p>
 
                                 <!-- Teacher Card -->
                                 <div class="role-card" onclick="showView('view-teacher-login')">
                                     <div class="role-icon-wrap teacher">
-                                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
                                             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                                             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                                         </svg>
@@ -155,7 +228,8 @@
                                         <span>Create & manage classes</span>
                                     </div>
                                     <div class="role-arrow">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
                                             <polyline points="9 18 15 12 9 6"></polyline>
                                         </svg>
                                     </div>
@@ -164,9 +238,11 @@
                                 <!-- Student Card -->
                                 <div class="role-card" onclick="showView('view-student-join')">
                                     <div class="role-icon-wrap student">
-                                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
                                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z">
+                                            </path>
                                         </svg>
                                     </div>
                                     <div class="role-info">
@@ -174,7 +250,8 @@
                                         <span>Join a class with a code</span>
                                     </div>
                                     <div class="role-arrow">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
                                             <polyline points="9 18 15 12 9 6"></polyline>
                                         </svg>
                                     </div>
@@ -186,7 +263,8 @@
                         <section id="view-teacher-login" class="auth-inner-view">
                             <div class="auth-centered-wrapper">
                                 <button class="btn-back" onclick="showView('view-role')">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -199,19 +277,43 @@
                                     <div class="form-group">
                                         <label for="login-email">Email Address</label>
                                         <div class="input-icon-wrap">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                            <input type="email" id="login-email" placeholder="you@school.edu" required autocomplete="email">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path
+                                                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                                </path>
+                                                <polyline points="22,6 12,13 2,6"></polyline>
+                                            </svg>
+                                            <input type="email" id="login-email" placeholder="you@school.edu" required
+                                                autocomplete="email">
                                         </div>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="login-password">Password</label>
                                         <div class="input-icon-wrap has-toggle">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
-                                            <button type="button" class="toggle-visibility" onclick="togglePasswordVisibility('login-password', this)">
-                                                <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                            </svg>
+                                            <input type="password" id="login-password" placeholder="••••••••" required
+                                                autocomplete="current-password">
+                                            <button type="button" class="toggle-visibility"
+                                                onclick="togglePasswordVisibility('login-password', this)">
+                                                <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2"
+                                                    style="display:none;">
+                                                    <path
+                                                        d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24">
+                                                    </path>
+                                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                                </svg>
                                             </button>
                                         </div>
                                     </div>
@@ -227,7 +329,8 @@
                                 </form>
 
                                 <div class="auth-switch-link">
-                                    Don't have an account? <a onclick="showView('view-teacher-signup'); resetSignupForm();">Sign Up</a>
+                                    Don't have an account? <a
+                                        onclick="showView('view-teacher-signup'); resetSignupForm();">Sign Up</a>
                                 </div>
                             </div>
                         </section>
@@ -236,7 +339,8 @@
                         <section id="view-teacher-signup" class="auth-inner-view">
                             <div class="auth-centered-wrapper">
                                 <button class="btn-back" onclick="showView('view-teacher-login')">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -263,16 +367,28 @@
                                         <div class="form-group">
                                             <label for="signup-name">Full Name</label>
                                             <div class="input-icon-wrap">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                                <input type="text" id="signup-name" placeholder="John Smith" required autocomplete="name">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                                <input type="text" id="signup-name" placeholder="John Smith" required
+                                                    autocomplete="name">
                                             </div>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="signup-email">Email Address</label>
                                             <div class="input-icon-wrap">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                                <input type="email" id="signup-email" placeholder="you@school.edu" required autocomplete="email">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path
+                                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                                    </path>
+                                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                                </svg>
+                                                <input type="email" id="signup-email" placeholder="you@school.edu"
+                                                    required autocomplete="email">
                                             </div>
                                         </div>
 
@@ -285,27 +401,63 @@
                                         <div class="form-group">
                                             <label for="signup-password">Password</label>
                                             <div class="input-icon-wrap has-toggle">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                                <input type="password" id="signup-password" placeholder="Min 6 characters" required autocomplete="new-password" oninput="evaluatePasswordStrength(this.value)">
-                                                <button type="button" class="toggle-visibility" onclick="togglePasswordVisibility('signup-password', this)">
-                                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                                    <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                </svg>
+                                                <input type="password" id="signup-password"
+                                                    placeholder="Min 6 characters" required autocomplete="new-password"
+                                                    oninput="evaluatePasswordStrength(this.value)">
+                                                <button type="button" class="toggle-visibility"
+                                                    onclick="togglePasswordVisibility('signup-password', this)">
+                                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                        fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                    <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                        fill="none" stroke="currentColor" stroke-width="2"
+                                                        style="display:none;">
+                                                        <path
+                                                            d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24">
+                                                        </path>
+                                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                                    </svg>
                                                 </button>
                                             </div>
                                             <div class="password-strength-meter">
                                                 <div class="strength-bar"><span id="pw-strength-fill"></span></div>
-                                                <span class="strength-label" id="pw-strength-label">Enter a password</span>
+                                                <span class="strength-label" id="pw-strength-label">Enter a
+                                                    password</span>
                                             </div>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="signup-confirm">Confirm Password</label>
                                             <div class="input-icon-wrap has-toggle">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                                <input type="password" id="signup-confirm" placeholder="••••••••" required autocomplete="new-password" oninput="checkPasswordMatch()">
-                                                <button type="button" class="toggle-visibility" onclick="togglePasswordVisibility('signup-confirm', this)">
-                                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                                    <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                </svg>
+                                                <input type="password" id="signup-confirm" placeholder="••••••••"
+                                                    required autocomplete="new-password" oninput="checkPasswordMatch()">
+                                                <button type="button" class="toggle-visibility"
+                                                    onclick="togglePasswordVisibility('signup-confirm', this)">
+                                                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                        fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                    <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                        fill="none" stroke="currentColor" stroke-width="2"
+                                                        style="display:none;">
+                                                        <path
+                                                            d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24">
+                                                        </path>
+                                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                                    </svg>
                                                 </button>
                                             </div>
                                             <span class="field-hint" id="pw-match-hint"></span>
@@ -315,7 +467,8 @@
                                             <span class="btn-label">Create Account</span>
                                             <div class="spinner"></div>
                                         </button>
-                                        <button type="button" class="btn btn-outline" onclick="goToSignupStep(1)">Back</button>
+                                        <button type="button" class="btn btn-outline"
+                                            onclick="goToSignupStep(1)">Back</button>
                                     </div>
                                 </form>
                             </div>
@@ -325,7 +478,8 @@
                         <section id="view-forgot-pw" class="auth-inner-view">
                             <div class="auth-centered-wrapper">
                                 <button class="btn-back" onclick="showView('view-teacher-login')">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -339,8 +493,15 @@
                                     <div class="form-group">
                                         <label for="forgot-email">Email Address</label>
                                         <div class="input-icon-wrap">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                            <input type="email" id="forgot-email" name="forgot-email" placeholder="you@school.edu" required autocomplete="email">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path
+                                                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                                </path>
+                                                <polyline points="22,6 12,13 2,6"></polyline>
+                                            </svg>
+                                            <input type="email" id="forgot-email" name="forgot-email"
+                                                placeholder="you@school.edu" required autocomplete="email">
                                         </div>
                                     </div>
 
@@ -356,7 +517,8 @@
                         <section id="view-student-join" class="auth-inner-view">
                             <div class="auth-centered-wrapper">
                                 <button class="btn-back" onclick="showView('view-role')">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -370,24 +532,42 @@
                                     <div class="form-group">
                                         <label for="student-name">Your Name</label>
                                         <div class="input-icon-wrap">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                            <input type="text" id="student-name" placeholder="Enter your name" required autocomplete="name">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            <input type="text" id="student-name" placeholder="Enter your name" required
+                                                autocomplete="name">
                                         </div>
                                     </div>
 
                                     <div class="form-group" id="group-student-email" style="display:none;">
                                         <label for="student-email">Email Address</label>
                                         <div class="input-icon-wrap">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                            <input type="email" id="student-email" placeholder="you@example.com" autocomplete="email">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <path
+                                                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                                </path>
+                                                <polyline points="22,6 12,13 2,6"></polyline>
+                                            </svg>
+                                            <input type="email" id="student-email" placeholder="you@example.com"
+                                                autocomplete="email">
                                         </div>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="student-code">Class Code</label>
                                         <div class="input-icon-wrap">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h.01M10 8h8M6 12h.01M10 12h8M6 16h.01M10 16h4"></path></svg>
-                                            <input type="text" id="student-code" placeholder="e.g. ABC123" required autocomplete="off" onkeyup="checkClassRequirements(this.value)" style="text-transform:uppercase; letter-spacing:2px; font-weight:700;">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                                <path d="M6 8h.01M10 8h8M6 12h.01M10 12h8M6 16h.01M10 16h4"></path>
+                                            </svg>
+                                            <input type="text" id="student-code" placeholder="e.g. ABC123" required
+                                                autocomplete="off" onkeyup="checkClassRequirements(this.value)"
+                                                style="text-transform:uppercase; letter-spacing:2px; font-weight:700;">
                                         </div>
                                     </div>
 
@@ -403,8 +583,10 @@
                         <section id="view-confirm-email" class="auth-inner-view">
                             <div class="auth-centered-wrapper" style="text-align:center;">
                                 <h1>Check Your <span class="accent">Email</span></h1>
-                                <p class="subtitle">We've sent a verification link to your email address. Please verify to continue.</p>
-                                <button class="btn btn-outline" onclick="showView('view-teacher-login')">Back to Sign In</button>
+                                <p class="subtitle">We've sent a verification link to your email address. Please verify
+                                    to continue.</p>
+                                <button class="btn btn-outline" onclick="showView('view-teacher-login')">Back to Sign
+                                    In</button>
                             </div>
                         </section>
 
@@ -412,7 +594,8 @@
                         <section id="view-teacher-pending" class="auth-inner-view">
                             <div class="auth-centered-wrapper" style="text-align:center;">
                                 <h1>Awaiting <span class="accent">Approval</span></h1>
-                                <p class="subtitle">Your teacher account is currently under review by the administrator. Once approved, you can log in and manage your classes.</p>
+                                <p class="subtitle">Your teacher account is currently under review by the administrator.
+                                    Once approved, you can log in and manage your classes.</p>
                                 <button class="btn btn-outline" onclick="handleSignOut()">Sign Out</button>
                             </div>
                         </section>
@@ -427,11 +610,29 @@
                                     <div class="form-group">
                                         <label for="reset-password">New Password</label>
                                         <div class="input-icon-wrap has-toggle">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                            <input type="password" id="reset-password" name="reset-password" placeholder="Min 6 characters" required autocomplete="new-password" oninput="evaluatePasswordStrength(this.value)">
-                                            <button type="button" class="toggle-visibility" onclick="togglePasswordVisibility('reset-password', this)">
-                                                <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                            </svg>
+                                            <input type="password" id="reset-password" name="reset-password"
+                                                placeholder="Min 6 characters" required autocomplete="new-password"
+                                                oninput="evaluatePasswordStrength(this.value)">
+                                            <button type="button" class="toggle-visibility"
+                                                onclick="togglePasswordVisibility('reset-password', this)">
+                                                <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2"
+                                                    style="display:none;">
+                                                    <path
+                                                        d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24">
+                                                    </path>
+                                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                                </svg>
                                             </button>
                                         </div>
                                         <div class="password-strength-meter">
@@ -443,11 +644,28 @@
                                     <div class="form-group">
                                         <label for="reset-confirm">Confirm New Password</label>
                                         <div class="input-icon-wrap has-toggle">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                            <input type="password" id="reset-confirm" name="reset-confirm" placeholder="••••••••" required autocomplete="new-password">
-                                            <button type="button" class="toggle-visibility" onclick="togglePasswordVisibility('reset-confirm', this)">
-                                                <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                            </svg>
+                                            <input type="password" id="reset-confirm" name="reset-confirm"
+                                                placeholder="••••••••" required autocomplete="new-password">
+                                            <button type="button" class="toggle-visibility"
+                                                onclick="togglePasswordVisibility('reset-confirm', this)">
+                                                <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                                <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2"
+                                                    style="display:none;">
+                                                    <path
+                                                        d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.79 21.79 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24">
+                                                    </path>
+                                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                                </svg>
                                             </button>
                                         </div>
                                     </div>
@@ -464,7 +682,8 @@
                         <section id="view-enter-otp" class="auth-inner-view">
                             <div class="auth-centered-wrapper">
                                 <button class="btn-back" onclick="showView('view-forgot-pw')">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -472,15 +691,22 @@
                                 </button>
 
                                 <h1>Enter Reset <span class="accent">Code</span></h1>
-                                <p class="subtitle">We emailed you a reset code. Enter it below to set a new password.</p>
+                                <p class="subtitle">We emailed you a reset code. Enter it below to set a new password.
+                                </p>
 
                                 <form id="form-otp" onsubmit="handleVerifyOtp(event)">
                                     <div class="form-group">
                                         <label for="otp-code">One-Time Code</label>
                                         <div class="input-icon-wrap">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M10 14h.01M14 14h.01M18 14h.01"></path></svg>
-                                            <input type="text" id="otp-code" name="otp-code" placeholder="Enter code" required
-                                                autocomplete="one-time-code" inputmode="numeric" maxlength="10"
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2">
+                                                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                                                <path
+                                                    d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M10 14h.01M14 14h.01M18 14h.01">
+                                                </path>
+                                            </svg>
+                                            <input type="text" id="otp-code" name="otp-code" placeholder="Enter code"
+                                                required autocomplete="one-time-code" inputmode="numeric" maxlength="10"
                                                 style="letter-spacing:6px; font-size:1.3rem; font-weight:700; text-align:center;">
                                         </div>
                                     </div>
@@ -490,7 +716,11 @@
                                         <div class="spinner"></div>
                                     </button>
 
-                                    <p style="text-align:center; margin-top:1rem; font-size:0.85rem; color:var(--text-muted);">Didn't get it? <button type="button" class="btn-ghost" style="font-size:0.85rem; padding:0; color:var(--accent);" onclick="showView('view-forgot-pw')">Resend code</button></p>
+                                    <p
+                                        style="text-align:center; margin-top:1rem; font-size:0.85rem; color:var(--text-muted);">
+                                        Didn't get it? <button type="button" class="btn-ghost"
+                                            style="font-size:0.85rem; padding:0; color:var(--accent);"
+                                            onclick="showView('view-forgot-pw')">Resend code</button></p>
                                 </form>
                             </div>
                         </section>
@@ -503,13 +733,16 @@
                      ============================================ -->
                 <section id="view-teacher-dashboard" class="view">
                     <div class="view-content-wrapper">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                             <div>
                                 <h2>Hello, <span id="teacher-name" class="accent">Teacher</span> 👋</h2>
-                                <p style="color:var(--text-muted); font-size:0.9rem;">Class Code: <strong id="teacher-class-code" style="color:var(--accent);">...</strong></p>
+                                <p style="color:var(--text-muted); font-size:0.9rem;">Class Code: <strong
+                                        id="teacher-class-code" style="color:var(--accent);">...</strong></p>
                             </div>
                             <button class="btn" style="width:auto; margin-top:0;" onclick="openModal('modal-subject')">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
                                     <line x1="12" y1="5" x2="12" y2="19"></line>
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
@@ -521,7 +754,11 @@
                         <div class="grid-responsive">
                             <div class="stat-card">
                                 <div class="stat-icon gold">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
                                 </div>
                                 <div class="stat-info">
                                     <p>Total Subjects</p>
@@ -530,16 +767,27 @@
                             </div>
                             <div class="stat-card">
                                 <div class="stat-icon blue">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
                                 </div>
                                 <div class="stat-info">
                                     <p>Class Code</p>
                                     <h3 id="stat-class-code">---</h3>
                                 </div>
                             </div>
-                            <div class="stat-card" style="cursor:pointer;" onclick="showView('view-manage-students'); loadStudents('pending');">
+                            <div class="stat-card" style="cursor:pointer;"
+                                onclick="showView('view-manage-students'); loadStudents('pending');">
                                 <div class="stat-icon purple">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
                                 </div>
                                 <div class="stat-info">
                                     <p>Pending Approvals</p>
@@ -550,13 +798,22 @@
 
                         <!-- Persistent Global Search -->
                         <div class="search-bar-wrap">
-                            <input type="text" id="teacher-global-search" name="teacher-global-search" aria-label="Search subjects, topics, or materials" class="search-input" placeholder="Search subjects, topics, or materials..." onkeyup="handleGlobalSearch(this.value, 'subjects-list')">
+                            <input type="text" id="teacher-global-search" name="teacher-global-search"
+                                aria-label="Search subjects, topics, or materials" class="search-input"
+                                placeholder="Search subjects, topics, or materials..."
+                                onkeyup="handleGlobalSearch(this.value, 'subjects-list')">
                         </div>
 
-                        <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:1rem;">SUBJECTS</div>
+                        <div
+                            style="font-size:0.85rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:1rem;">
+                            SUBJECTS</div>
 
                         <div class="empty-state" id="empty-subjects">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
                             <h3>No subjects created yet</h3>
                             <p>Click "New Subject" above to start organizing course materials.</p>
                         </div>
@@ -571,29 +828,50 @@
                 <section id="view-teacher-topics" class="view">
                     <div class="view-content-wrapper">
                         <button class="btn-back" onclick="showView('view-teacher-dashboard')">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
                             Back to Dashboard
                         </button>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                             <div>
                                 <h2 id="current-subject-name">Subject Name</h2>
                                 <p style="color:var(--text-muted); font-size:0.85rem;">Topics and Learning Materials</p>
                             </div>
                             <div style="display:flex; gap:10px;">
-                                <button class="btn-danger" style="padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; gap:6px;" onclick="deleteCurrentSubject()">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                <button class="btn-danger"
+                                    style="padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; gap:6px;"
+                                    onclick="deleteCurrentSubject()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path
+                                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                        </path>
+                                    </svg>
                                     <span>Delete Subject</span>
                                 </button>
-                                <button class="btn" style="width:auto; margin-top:0;" onclick="openModal('modal-topic')">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <button class="btn" style="width:auto; margin-top:0;"
+                                    onclick="openModal('modal-topic')">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
                                     <span>Add Topic</span>
                                 </button>
                             </div>
                         </div>
 
                         <div class="search-bar-wrap">
-                            <input type="text" id="teacher-subject-search" name="teacher-subject-search" aria-label="Search topics and materials inside this subject" class="search-input" placeholder="Search topics &amp; materials inside this subject..." onkeyup="filterTopics(this.value, 'topics-list')">
+                            <input type="text" id="teacher-subject-search" name="teacher-subject-search"
+                                aria-label="Search topics and materials inside this subject" class="search-input"
+                                placeholder="Search topics &amp; materials inside this subject..."
+                                onkeyup="filterTopics(this.value, 'topics-list')">
                         </div>
 
                         <div id="topics-list"></div>
@@ -606,17 +884,25 @@
                 <section id="view-manage-students" class="view">
                     <div class="view-content-wrapper">
                         <button class="btn-back" onclick="showView('view-teacher-dashboard')">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
                             Back to Dashboard
                         </button>
 
                         <h1>Manage <span class="accent">Students</span></h1>
                         <p class="subtitle">Approve, restrict, or block students from accessing your class.</p>
 
-                        <div style="display:flex; gap:12px; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:8px;">
-                            <button class="btn-ghost" onclick="loadStudents('pending')" id="tab-pending" style="color:var(--accent); border-bottom:2px solid var(--accent); border-radius:0;">Pending</button>
-                            <button class="btn-ghost" onclick="loadStudents('approved')" id="tab-approved">Approved</button>
-                            <button class="btn-ghost" onclick="loadStudents('blocked')" id="tab-blocked">Blocked</button>
+                        <div
+                            style="display:flex; gap:12px; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:8px;">
+                            <button class="btn-ghost" onclick="loadStudents('pending')" id="tab-pending"
+                                style="color:var(--accent); border-bottom:2px solid var(--accent); border-radius:0;">Pending</button>
+                            <button class="btn-ghost" onclick="loadStudents('approved')"
+                                id="tab-approved">Approved</button>
+                            <button class="btn-ghost" onclick="loadStudents('blocked')"
+                                id="tab-blocked">Blocked</button>
                         </div>
 
                         <div id="students-list"></div>
@@ -629,22 +915,31 @@
                 <section id="view-class-settings" class="view">
                     <div class="view-content-wrapper" style="max-width:680px;">
                         <button class="btn-back" onclick="showView('view-teacher-dashboard')">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
                             Back to Dashboard
                         </button>
 
                         <h1>Class <span class="accent">Settings</span></h1>
                         <p class="subtitle">Control access options, whitelist emails, and registration windows.</p>
 
-                        <div style="background:var(--bg-surface); padding:1.2rem; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+                        <div
+                            style="background:var(--bg-surface); padding:1.2rem; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
                             <div>
                                 <h3 style="font-size:1rem; margin-bottom:4px;">Require Student Email</h3>
-                                <p style="font-size:0.82rem; color:var(--text-muted);">Enforce email authorization to join this class</p>
+                                <p style="font-size:0.82rem; color:var(--text-muted);">Enforce email authorization to
+                                    join this class</p>
                             </div>
-                            <input type="checkbox" id="setting-require-emails" onchange="updateClassSetting('require_emails', this.checked)" style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
+                            <input type="checkbox" id="setting-require-emails"
+                                onchange="updateClassSetting('require_emails', this.checked)"
+                                style="width:20px; height:20px; accent-color:var(--accent); cursor:pointer;">
                         </div>
 
-                        <div id="whitelist-section" style="display:none; background:var(--bg-surface); padding:1.2rem; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1.5rem;">
+                        <div id="whitelist-section"
+                            style="display:none; background:var(--bg-surface); padding:1.2rem; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1.5rem;">
                             <h3 style="font-size:1rem; margin-bottom:1rem;">Email Whitelist & Subject Permissions</h3>
                             <div class="form-group">
                                 <label>Student Email</label>
@@ -652,27 +947,36 @@
                             </div>
                             <div style="margin-bottom:1rem;">
                                 <label style="margin-bottom:6px;">Subject Access Rights:</label>
-                                <div id="whitelist-subject-checks" style="display:flex; flex-direction:column; gap:6px; background:var(--bg-input); padding:10px; border-radius:8px; border:1px solid var(--border);"></div>
+                                <div id="whitelist-subject-checks"
+                                    style="display:flex; flex-direction:column; gap:6px; background:var(--bg-input); padding:10px; border-radius:8px; border:1px solid var(--border);">
+                                </div>
                             </div>
-                            <button class="btn" style="margin-top:0;" onclick="addToWhitelist()">Add Whitelisted Email</button>
+                            <button class="btn" style="margin-top:0;" onclick="addToWhitelist()">Add Whitelisted
+                                Email</button>
 
                             <div style="margin-top:1.2rem;">
                                 <label>Authorized Whitelist</label>
-                                <div id="whitelist-list" style="max-height:200px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:6px; background:var(--bg-input);"></div>
+                                <div id="whitelist-list"
+                                    style="max-height:200px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:6px; background:var(--bg-input);">
+                                </div>
                             </div>
                         </div>
 
-                        <div style="background:var(--bg-surface); padding:1.2rem; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1.5rem;">
+                        <div
+                            style="background:var(--bg-surface); padding:1.2rem; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1.5rem;">
                             <h3 style="font-size:1rem; margin-bottom:1rem;">Registration Window</h3>
                             <div class="form-group">
                                 <label>Window Opens</label>
-                                <input type="datetime-local" id="setting-signup-start" onchange="updateClassSetting('signup_window_start', this.value)">
+                                <input type="datetime-local" id="setting-signup-start"
+                                    onchange="updateClassSetting('signup_window_start', this.value)">
                             </div>
                             <div class="form-group">
                                 <label>Window Closes</label>
-                                <input type="datetime-local" id="setting-signup-end" onchange="updateClassSetting('signup_window_end', this.value)">
+                                <input type="datetime-local" id="setting-signup-end"
+                                    onchange="updateClassSetting('signup_window_end', this.value)">
                             </div>
-                            <p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">* Students can only register during this specified window.</p>
+                            <p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">* Students can only
+                                register during this specified window.</p>
                         </div>
                     </div>
                 </section>
@@ -684,19 +988,30 @@
                     <div class="view-content-wrapper">
                         <div style="margin-bottom:1.5rem;">
                             <h2>Welcome, <span id="student-display-name" class="accent">Student</span> 📚</h2>
-                            <p style="color:var(--text-muted); font-size:0.9rem;" id="joined-class-info">Loading class details...</p>
+                            <p style="color:var(--text-muted); font-size:0.9rem;" id="joined-class-info">Loading class
+                                details...</p>
                         </div>
 
                         <div class="search-bar-wrap">
-                            <input type="text" id="student-global-search" name="student-global-search" aria-label="Search subjects, topics, or materials" class="search-input" placeholder="Search subjects, topics, or materials..." onkeyup="handleGlobalSearch(this.value, 'student-subjects-list')">
+                            <input type="text" id="student-global-search" name="student-global-search"
+                                aria-label="Search subjects, topics, or materials" class="search-input"
+                                placeholder="Search subjects, topics, or materials..."
+                                onkeyup="handleGlobalSearch(this.value, 'student-subjects-list')">
                         </div>
 
-                        <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:1rem;">YOUR AUTHORIZED SUBJECTS</div>
+                        <div
+                            style="font-size:0.85rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:1rem;">
+                            YOUR AUTHORIZED SUBJECTS</div>
 
                         <div class="empty-state" id="empty-student-subjects" style="display:none;">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
                             <h3>No subjects available</h3>
-                            <p>Either your teacher hasn't created any subjects yet or your account access is restricted.</p>
+                            <p>Either your teacher hasn't created any subjects yet or your account access is restricted.
+                            </p>
                         </div>
 
                         <div id="student-subjects-list"></div>
@@ -709,7 +1024,11 @@
                 <section id="view-student-topics" class="view">
                     <div class="view-content-wrapper">
                         <button class="btn-back" onclick="showView('view-student-dashboard')">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
                             Back to Subjects
                         </button>
 
@@ -719,7 +1038,10 @@
                         </div>
 
                         <div class="search-bar-wrap">
-                            <input type="text" id="student-subject-search" name="student-subject-search" aria-label="Search topics and materials inside this subject" class="search-input" placeholder="Search topics &amp; materials inside this subject..." onkeyup="filterTopics(this.value, 'student-topics-list')">
+                            <input type="text" id="student-subject-search" name="student-subject-search"
+                                aria-label="Search topics and materials inside this subject" class="search-input"
+                                placeholder="Search topics &amp; materials inside this subject..."
+                                onkeyup="filterTopics(this.value, 'student-topics-list')">
                         </div>
 
                         <div id="student-topics-list"></div>
@@ -732,16 +1054,24 @@
                 <section id="view-admin-panel" class="view">
                     <div class="view-content-wrapper">
                         <button class="btn-back" onclick="showView('view-teacher-dashboard')">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
                             Back to Dashboard
                         </button>
 
                         <h1>Admin <span class="accent">Panel</span></h1>
                         <p class="subtitle">Review and approve teacher registrations across the platform.</p>
 
-                        <div style="display:flex; gap:12px; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:8px;">
-                            <button class="btn-ghost" onclick="loadTeachers('pending')" id="teacher-tab-pending" style="color:var(--accent); border-bottom:2px solid var(--accent); border-radius:0;">Pending Approval</button>
-                            <button class="btn-ghost" onclick="loadTeachers('approved')" id="teacher-tab-approved">Approved Teachers</button>
+                        <div
+                            style="display:flex; gap:12px; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:8px;">
+                            <button class="btn-ghost" onclick="loadTeachers('pending')" id="teacher-tab-pending"
+                                style="color:var(--accent); border-bottom:2px solid var(--accent); border-radius:0;">Pending
+                                Approval</button>
+                            <button class="btn-ghost" onclick="loadTeachers('approved')"
+                                id="teacher-tab-approved">Approved Teachers</button>
                         </div>
 
                         <div id="teachers-list"></div>
@@ -764,8 +1094,10 @@
                 <input type="text" id="input-subject-name" placeholder="e.g. Mathematics, Physics">
             </div>
             <div style="display:flex; gap:10px; margin-top:0.5rem;">
-                <button class="btn btn-outline" style="margin-top:0;" onclick="closeModal('modal-subject')">Cancel</button>
-                <button class="btn" style="margin-top:0;" id="btn-create-subject" onclick="createSubject()">Create</button>
+                <button class="btn btn-outline" style="margin-top:0;"
+                    onclick="closeModal('modal-subject')">Cancel</button>
+                <button class="btn" style="margin-top:0;" id="btn-create-subject"
+                    onclick="createSubject()">Create</button>
             </div>
         </div>
     </div>
@@ -789,8 +1121,10 @@
                 <textarea id="input-topic-desc" rows="3" placeholder="Brief outline of topic content..."></textarea>
             </div>
             <div style="display:flex; gap:10px; margin-top:0.5rem;">
-                <button class="btn btn-outline" style="margin-top:0;" onclick="closeModal('modal-topic')">Cancel</button>
-                <button class="btn" style="margin-top:0;" id="btn-create-topic" onclick="createTopic()">Create Topic</button>
+                <button class="btn btn-outline" style="margin-top:0;"
+                    onclick="closeModal('modal-topic')">Cancel</button>
+                <button class="btn" style="margin-top:0;" id="btn-create-topic" onclick="createTopic()">Create
+                    Topic</button>
             </div>
         </div>
     </div>
@@ -799,33 +1133,103 @@
     <div id="modal-upload" class="modal-overlay">
         <div class="modal-box">
             <h3>Upload Learning Material</h3>
-            <div class="form-group">
-                <label>Upload File (Cloudinary PDF/Image)</label>
-                <input type="file" id="input-file" accept="*/*">
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem; line-height:1.5;">Choose <strong
+                    style="color:var(--text-main)">one option only</strong> — upload a file <em>or</em> link a YouTube
+                video. The other option will be disabled once you make a choice.</p>
+
+            <!-- File upload section -->
+            <div class="form-group" id="upload-file-section">
+                <label style="display:flex; align-items:center; gap:8px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Upload File <span style="font-weight:400; color:var(--text-muted);">(PDF, image, doc, video…)</span>
+                </label>
+                <!-- accept="*/*" with the capture hint so Android shows all files, not just gallery -->
+                <input type="file" id="input-file" accept="*/*" style="font-size:0.9rem;"
+                    onchange="onUploadFileChange()">
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Supports PDF, images, Word,
+                    PowerPoint, and more.</p>
             </div>
-            <div style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin:0.5rem 0;">— OR —</div>
-            <div class="form-group">
-                <label>YouTube Link</label>
-                <input type="url" id="input-youtube" placeholder="https://www.youtube.com/watch?v=...">
+
+            <div
+                style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin:0.5rem 0; display:flex; align-items:center; gap:8px;">
+                <hr style="flex:1; border:none; border-top:1px solid var(--border);"> OR
+                <hr style="flex:1; border:none; border-top:1px solid var(--border);">
             </div>
+
+            <!-- YouTube section -->
+            <div class="form-group" id="upload-youtube-section">
+                <label style="display:flex; align-items:center; gap:8px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="2">
+                        <rect x="2" y="7" width="20" height="14" rx="3" ry="3"></rect>
+                        <path d="m10 10 5 3-5 3V10z" fill="#ff4444" stroke="none"></path>
+                    </svg>
+                    YouTube Link
+                </label>
+                <input type="url" id="input-youtube" placeholder="https://www.youtube.com/watch?v=..."
+                    oninput="onYoutubeInput()">
+            </div>
+
             <div style="display:flex; gap:10px; margin-top:0.5rem;">
-                <button class="btn btn-outline" style="margin-top:0;" onclick="closeModal('modal-upload')">Cancel</button>
+                <button class="btn btn-outline" style="margin-top:0;"
+                    onclick="closeModal('modal-upload')">Cancel</button>
                 <button class="btn" style="margin-top:0;" id="btn-upload-doc" onclick="uploadDocument()">Upload</button>
             </div>
         </div>
     </div>
 
-    <!-- PDF & Media Preview Modal -->
+    <!-- PDF & Image Preview Modal -->
     <div id="modal-pdf-viewer" class="modal-overlay">
         <div class="modal-box modal-media">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem;">
-                <h3 id="pdf-modal-title" style="margin-bottom:0; font-size:1.05rem;">Document Preview</h3>
-                <div style="display:flex; gap:8px;">
-                    <a id="pdf-open-tab-btn" target="_blank" class="btn-ghost" style="color:var(--accent);">Open in New Tab ↗</a>
-                    <button class="btn-ghost" onclick="closeModal('modal-pdf-viewer')">✕ Close</button>
+            <div class="viewer-toolbar">
+                <h3 id="pdf-modal-title" class="viewer-title">Document Preview</h3>
+                <div class="viewer-actions">
+                    <a id="viewer-download-btn" class="viewer-btn" title="Download" download>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download
+                    </a>
+                    <a id="viewer-open-btn" target="_blank" rel="noopener" class="viewer-btn" title="Open in browser">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        Open
+                    </a>
+                    <button class="viewer-btn" id="viewer-fullscreen-btn" onclick="toggleViewerFullscreen()"
+                        title="Fullscreen">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <polyline points="9 21 3 21 3 15"></polyline>
+                            <line x1="21" y1="3" x2="14" y2="10"></line>
+                            <line x1="3" y1="21" x2="10" y2="14"></line>
+                        </svg>
+                        Fullscreen
+                    </button>
+                    <button class="viewer-btn viewer-btn-close" onclick="closeModal('modal-pdf-viewer')" title="Close">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <iframe id="pdf-iframe" class="media-viewer-frame" src="about:blank"></iframe>
+            <!-- Image viewer (for photos) -->
+            <div id="viewer-image-wrap" class="viewer-image-wrap" style="display:none;">
+                <img id="viewer-img" src="" alt="Preview" class="viewer-img">
+            </div>
+            <!-- PDF / doc viewer (iframe) -->
+            <iframe id="pdf-iframe" class="media-viewer-frame" src="about:blank" style="display:none;"></iframe>
         </div>
     </div>
 
@@ -837,7 +1241,10 @@
                 <button class="btn-ghost" onclick="closeModal('modal-youtube-player')">✕ Close</button>
             </div>
             <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:8px;">
-                <iframe id="youtube-iframe" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe id="youtube-iframe"
+                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src=""
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -847,7 +1254,8 @@
         <div class="modal-box">
             <h3>Student Engagement Analytics</h3>
             <div id="engagement-details" style="min-height:120px;"></div>
-            <button class="btn btn-outline" style="margin-top:1rem;" onclick="closeModal('modal-engagement')">Close</button>
+            <button class="btn btn-outline" style="margin-top:1rem;"
+                onclick="closeModal('modal-engagement')">Close</button>
         </div>
     </div>
 
@@ -855,9 +1263,11 @@
     <div id="modal-delete-confirm" class="modal-overlay">
         <div class="modal-box" style="border-color:var(--danger);">
             <h3 style="color:var(--danger);">Confirm Action</h3>
-            <p id="delete-modal-msg" style="margin-bottom:1.5rem; font-size:0.95rem; color:var(--text-main);">Are you sure?</p>
+            <p id="delete-modal-msg" style="margin-bottom:1.5rem; font-size:0.95rem; color:var(--text-main);">Are you
+                sure?</p>
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-outline" style="margin-top:0;" onclick="closeModal('modal-delete-confirm')">Cancel</button>
+                <button class="btn btn-outline" style="margin-top:0;"
+                    onclick="closeModal('modal-delete-confirm')">Cancel</button>
                 <button class="btn btn-danger" style="margin-top:0;" onclick="executeDelete()">Delete</button>
             </div>
         </div>

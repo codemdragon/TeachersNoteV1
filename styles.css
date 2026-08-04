@@ -232,32 +232,12 @@ body {
     }
 }
 
-/* Desktop chrome (sidebar/topbar) is hidden by default; the media query
-   above reveals it only once body.is-authenticated is set by app.js,
-   which keeps mobile layout untouched at any screen size. */
-.desktop-topbar {
-    display: none;
-}
-
-#mobile-signout-btn {
-    display: none;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 6px;
-}
-
-body.is-authenticated #mobile-signout-btn {
-    display: inline-flex;
-}
-
-/* Mobile Header */
+/* Mobile Header & Hamburger */
 .mobile-header {
     position: sticky;
     top: 0;
     width: 100%;
-    padding: 1rem 1.25rem;
+    padding: 0.85rem 1.25rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -265,6 +245,165 @@ body.is-authenticated #mobile-signout-btn {
     background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
+}
+
+#mobile-hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-xs);
+    transition: background 0.2s;
+}
+
+#mobile-hamburger-btn:hover {
+    background: var(--bg-surface);
+}
+
+body.is-authenticated #mobile-hamburger-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Mobile Nav Drawer Backdrop */
+.mobile-nav-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1500;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Mobile Nav Drawer */
+.mobile-nav-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    z-index: 1501;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-nav-drawer.open {
+    transform: translateX(0);
+}
+
+.mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.mobile-drawer-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-xs);
+}
+
+.mobile-drawer-close:hover {
+    color: var(--text-main);
+    background: var(--bg-surface);
+}
+
+/* Media Viewer (Image & PDF Modal Toolbars) */
+.viewer-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.viewer-title {
+    margin-bottom: 0 !important;
+    font-size: 1.05rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.viewer-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.viewer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: var(--radius-xs);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.viewer-btn:hover {
+    background: var(--bg-input);
+    color: var(--text-main);
+    border-color: var(--accent);
+}
+
+.viewer-btn-close {
+    padding: 6px;
+}
+
+/* Image preview container with pinch-zoom support */
+.viewer-image-wrap {
+    width: 100%;
+    height: 100%;
+    max-height: calc(85vh - 60px);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #090d16;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--border);
+    touch-action: pinch-zoom pan-x pan-y;
+}
+
+.viewer-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    touch-action: pinch-zoom pan-x pan-y;
 }
 
 /* Ambient Orbs */

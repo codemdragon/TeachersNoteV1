@@ -48,6 +48,11 @@
         var newView = document.getElementById(viewId);
         if (!newView) return;
 
+        // Always scroll to the top when changing view
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        var vc = document.getElementById('view-container');
+        if (vc) vc.scrollTop = 0;
+
         // Deactivate whichever top-level view is currently showing
         // (either the shared auth-shell, or one of the workspace sections)
         var oldOuterActive = document.querySelector('#view-container > .view.active');
@@ -73,8 +78,33 @@
         }
 
         window.currentView = viewId;
+        closeMobileNav(); // close drawer on any navigation
         updateDesktopSidebar(viewId);
         updateTopbarBreadcrumb(viewId);
+    };
+
+    // ============================================
+    // MOBILE HAMBURGER NAV DRAWER
+    // ============================================
+    window.toggleMobileNav = function () {
+        var drawer = document.getElementById('mobile-nav-drawer');
+        var backdrop = document.getElementById('mobile-nav-backdrop');
+        var isOpen = drawer.classList.contains('open');
+        if (isOpen) {
+            closeMobileNav();
+        } else {
+            drawer.classList.add('open');
+            backdrop.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    window.closeMobileNav = function () {
+        var drawer = document.getElementById('mobile-nav-drawer');
+        var backdrop = document.getElementById('mobile-nav-backdrop');
+        if (drawer) drawer.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('open');
+        document.body.style.overflow = '';
     };
 
     // ============================================
@@ -152,8 +182,11 @@
 
     function updateDesktopSidebar(viewId) {
         var navMenu = document.getElementById('desktop-nav-menu');
+        var mobileNavMenu = document.getElementById('mobile-nav-menu');
         var classBadge = document.getElementById('sidebar-class-badge');
         var codeText = document.getElementById('sidebar-code-text');
+        var mobileClassBadge = document.getElementById('mobile-sidebar-class-badge');
+        var mobileCodeText = document.getElementById('mobile-sidebar-code-text');
 
         var isAuthTeacher = TEACHER_WORKSPACE_VIEWS.indexOf(viewId) !== -1;
         var isAuthStudent = STUDENT_WORKSPACE_VIEWS.indexOf(viewId) !== -1;
@@ -162,9 +195,11 @@
             if (isAuthTeacher) {
                 if (classBadge) classBadge.style.display = 'block';
                 if (codeText) codeText.textContent = window.currentClassCode || '------';
+                if (mobileClassBadge) mobileClassBadge.style.display = 'block';
+                if (mobileCodeText) mobileCodeText.textContent = window.currentClassCode || '------';
 
                 var isAdmin = window.currentUser && window.currentUser.email === ADMIN_EMAIL;
-                navMenu.innerHTML = `
+                var teacherNavHTML = `
                     <li class="nav-item ${viewId === 'view-teacher-dashboard' || viewId === 'view-teacher-topics' ? 'active' : ''}" onclick="showView('view-teacher-dashboard')">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                         Dashboard
@@ -184,19 +219,25 @@
                     </li>
                     ` : ''}
                 `;
+                if (navMenu) navMenu.innerHTML = teacherNavHTML;
+                if (mobileNavMenu) mobileNavMenu.innerHTML = teacherNavHTML;
             } else if (isAuthStudent) {
                 if (classBadge) classBadge.style.display = 'none';
-                navMenu.innerHTML = `
+                if (mobileClassBadge) mobileClassBadge.style.display = 'none';
+                var studentNavHTML = `
                     <li class="nav-item ${viewId === 'view-student-dashboard' || viewId === 'view-student-topics' ? 'active' : ''}" onclick="showView('view-student-dashboard')">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                         Course Content
                     </li>
                 `;
+                if (navMenu) navMenu.innerHTML = studentNavHTML;
+                if (mobileNavMenu) mobileNavMenu.innerHTML = studentNavHTML;
             }
         }
         // Sidebar/topbar visibility itself is driven by the body.is-authenticated
         // class (set in showView), so no inline style toggling is needed here.
     }
+
 
     // ============================================
     // UTILITY HELPERS
@@ -263,7 +304,7 @@
     };
 
     // ============================================
-    // MEDIA VIEWER (PDF & YOUTUBE)
+    // MEDIA VIEWER (PDF, IMAGE & YOUTUBE)
     // ============================================
     window.openDocument = function (url, fileName, type) {
         // Handle YouTube videos
@@ -276,21 +317,57 @@
             }
         }
 
-        // Web PDF & Document Previewer Modal
+        // Set title and raw URL for open/download buttons
         var modalTitle = document.getElementById('pdf-modal-title');
-        var openTabBtn = document.getElementById('pdf-open-tab-btn');
+        var openBtn = document.getElementById('viewer-open-btn');
+        var dlBtn = document.getElementById('viewer-download-btn');
+        var imgWrap = document.getElementById('viewer-image-wrap');
+        var img = document.getElementById('viewer-img');
         var iframe = document.getElementById('pdf-iframe');
 
-        if (modalTitle) modalTitle.textContent = fileName || 'Document Preview';
-        if (openTabBtn) openTabBtn.href = url;
+        if (modalTitle) modalTitle.textContent = fileName || 'Preview';
 
-        // Use Google Docs Viewer wrapper for cross-domain PDFs/office files or direct iframe
-        var viewerUrl = (url.endsWith('.pdf') || type.includes('pdf'))
-            ? 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true'
-            : url;
+        // Fix Cloudinary PDF URLs: /image/upload/ → /raw/upload/ so browser opens natively
+        var rawUrl = url.replace('/image/upload/', '/raw/upload/');
 
-        iframe.src = viewerUrl;
+        if (openBtn) openBtn.href = rawUrl;
+        if (dlBtn) { dlBtn.href = rawUrl; dlBtn.setAttribute('download', fileName || 'download'); }
+
+        // Detect image types
+        var isImage = /\.(png|jpe?g|gif|webp|svg|bmp|tiff?|avif)$/i.test(url)
+            || (type && type.startsWith('image/'));
+
+        // Detect PDF
+        var isPdf = /\.pdf$/i.test(url) || (type && type.includes('pdf'));
+
+        if (isImage) {
+            // Show native pinch-zoom image viewer
+            iframe.style.display = 'none';
+            iframe.src = 'about:blank';
+            img.src = url;
+            imgWrap.style.display = 'flex';
+        } else {
+            // Show PDF/doc via Google Docs Viewer (handles cross-origin PDFs)
+            imgWrap.style.display = 'none';
+            img.src = '';
+            var viewerUrl = isPdf
+                ? 'https://docs.google.com/viewer?url=' + encodeURIComponent(rawUrl) + '&embedded=true'
+                : rawUrl;
+            iframe.src = viewerUrl;
+            iframe.style.display = 'block';
+        }
+
         openModal('modal-pdf-viewer');
+    };
+
+    window.toggleViewerFullscreen = function () {
+        var box = document.querySelector('#modal-pdf-viewer .modal-box');
+        if (!box) return;
+        if (!document.fullscreenElement) {
+            box.requestFullscreen && box.requestFullscreen();
+        } else {
+            document.exitFullscreen && document.exitFullscreen();
+        }
     };
 
     function getYouTubeId(url) {
@@ -894,9 +971,48 @@
 
     window.prepareUpload = function (topicId) {
         window.currentUploadTopicId = topicId;
-        document.getElementById('input-file').value = '';
-        document.getElementById('input-youtube').value = '';
+        var fileInput = document.getElementById('input-file');
+        var ytInput = document.getElementById('input-youtube');
+        if (fileInput) fileInput.value = '';
+        if (ytInput) ytInput.value = '';
+        // Reset mutual-exclusion state
+        resetUploadSections();
         openModal('modal-upload');
+    };
+
+    function resetUploadSections() {
+        var fileSection = document.getElementById('upload-file-section');
+        var ytSection = document.getElementById('upload-youtube-section');
+        var fileInput = document.getElementById('input-file');
+        var ytInput = document.getElementById('input-youtube');
+        if (fileSection) fileSection.style.opacity = '1';
+        if (ytSection) ytSection.style.opacity = '1';
+        if (fileInput) { fileInput.disabled = false; }
+        if (ytInput) { ytInput.disabled = false; }
+    }
+
+    window.onUploadFileChange = function () {
+        var fileInput = document.getElementById('input-file');
+        var ytSection = document.getElementById('upload-youtube-section');
+        var ytInput = document.getElementById('input-youtube');
+        if (fileInput && fileInput.files.length > 0) {
+            if (ytSection) ytSection.style.opacity = '0.35';
+            if (ytInput) { ytInput.disabled = true; ytInput.value = ''; }
+        } else {
+            resetUploadSections();
+        }
+    };
+
+    window.onYoutubeInput = function () {
+        var ytInput = document.getElementById('input-youtube');
+        var fileSection = document.getElementById('upload-file-section');
+        var fileInput = document.getElementById('input-file');
+        if (ytInput && ytInput.value.trim() !== '') {
+            if (fileSection) fileSection.style.opacity = '0.35';
+            if (fileInput) { fileInput.disabled = true; fileInput.value = ''; }
+        } else {
+            resetUploadSections();
+        }
     };
 
     window.uploadDocument = async function () {
