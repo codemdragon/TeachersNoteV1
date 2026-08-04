@@ -433,6 +433,17 @@
                 return;
             }
 
+            // Ensure profile record exists with is_approved = false
+            if (res.data && res.data.user) {
+                try {
+                    await window.supabaseClient.from('profiles').upsert({
+                        id: res.data.user.id,
+                        full_name: name,
+                        is_approved: false
+                    });
+                } catch (e) { console.log('Profile upsert notice:', e); }
+            }
+
             showView('view-confirm-email');
             resetSignupForm();
         } catch (err) {
@@ -1346,7 +1357,13 @@
         }
 
         var isApproved = (statusFilter === 'approved');
-        var res = await window.supabaseClient.from('profiles').select('id, full_name, created_at, is_approved').eq('is_approved', isApproved).order('created_at', { ascending: false });
+        var query = window.supabaseClient.from('profiles').select('id, full_name, created_at, is_approved');
+        if (isApproved) {
+            query = query.eq('is_approved', true);
+        } else {
+            query = query.or('is_approved.eq.false,is_approved.is.null');
+        }
+        var res = await query.order('created_at', { ascending: false });
         var list = document.getElementById('teachers-list');
 
         if (res.data && res.data.length > 0) {
@@ -1355,8 +1372,8 @@
                     <div class="data-row-main">
                         <div class="data-row-avatar">${(t.full_name || '?').trim().charAt(0).toUpperCase()}</div>
                         <div class="data-row-info">
-                            <h3>${t.full_name || 'Unknown'}</h3>
-                            <span>Signed up ${new Date(t.created_at).toLocaleDateString()} &middot; <span class="status-badge ${isApproved ? 'approved' : 'pending'}">${isApproved ? 'approved' : 'pending'}</span></span>
+                            <h3>${t.full_name || 'Teacher Account'}</h3>
+                            <span>Signed up ${t.created_at ? new Date(t.created_at).toLocaleDateString() : 'recently'} &middot; <span class="status-badge ${isApproved ? 'approved' : 'pending'}">${isApproved ? 'approved' : 'pending'}</span></span>
                         </div>
                     </div>
                     <div class="data-row-actions">
@@ -1371,7 +1388,7 @@
     };
 
     window.updateTeacherStatus = async function (teacherId, approve) {
-        var res = await window.supabaseClient.from('profiles').update({ is_approved: approve }).eq('id', teacherId);
+        var res = await window.supabaseClient.from('profiles').upsert({ id: teacherId, is_approved: approve });
         if (res.error) showToast(res.error.message, 'error');
         else {
             showToast(approve ? 'Teacher approved!' : 'Teacher access revoked');
