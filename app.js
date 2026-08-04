@@ -1330,13 +1330,24 @@
     // ON LOAD INIT
     // ============================================
     window.onload = async function () {
-        // Listen for Supabase auth events (handles PASSWORD_RECOVERY from email links)
+        // 1. Check synchronously if the URL hash contains a password recovery token
+        var isPasswordReset = window.location.hash && (
+            window.location.hash.includes('type=recovery') || 
+            window.location.hash.includes('type=invite')
+        );
+
+        // 2. Listen for Supabase auth events
         window.supabaseClient.auth.onAuthStateChange(function (event, session) {
             if (event === 'PASSWORD_RECOVERY') {
-                // User clicked the reset link — show the set-new-password screen
                 showView('view-reset-password');
             }
         });
+
+        // 3. If resetting password, show reset screen and stop standard navigation
+        if (isPasswordReset) {
+            showView('view-reset-password');
+            return;
+        }
 
         var studentSession = localStorage.getItem('student_session');
         if (studentSession) {
