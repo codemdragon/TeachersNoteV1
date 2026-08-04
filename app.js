@@ -322,10 +322,14 @@
             }
         }
 
-        // Fix Cloudinary PDF URLs: /image/upload/ → /raw/upload/ so browser opens natively
-        var rawUrl = url.replace('/image/upload/', '/raw/upload/');
-        window.currentViewerUrl = rawUrl;
-        window.currentViewerFileName = fileName || 'document.pdf';
+        // Standardize URL (Cloudinary raw files are served directly)
+        var targetUrl = url;
+        if (targetUrl.includes('/image/upload/') && (/\.pdf$/i.test(targetUrl) || (type && type.includes('pdf')))) {
+            targetUrl = targetUrl.replace('/image/upload/', '/raw/upload/');
+        }
+
+        window.currentViewerUrl = targetUrl;
+        window.currentViewerFileName = fileName || 'document';
 
         var modalTitle = document.getElementById('pdf-modal-title');
         var openBtn = document.getElementById('viewer-open-btn');
@@ -334,28 +338,28 @@
         var iframe = document.getElementById('pdf-iframe');
 
         if (modalTitle) modalTitle.textContent = fileName || 'Preview';
-        if (openBtn) openBtn.href = rawUrl;
+        if (openBtn) openBtn.href = targetUrl;
 
         // Detect image types
-        var isImage = /\.(png|jpe?g|gif|webp|svg|bmp|tiff?|avif)$/i.test(url)
+        var isImage = /\.(png|jpe?g|gif|webp|svg|bmp|tiff?|avif)$/i.test(targetUrl)
             || (type && type.startsWith('image/'));
 
         // Detect PDF
-        var isPdf = /\.pdf$/i.test(url) || (type && type.includes('pdf'));
+        var isPdf = /\.pdf$/i.test(targetUrl) || (type && type.includes('pdf'));
 
         if (isImage) {
             // Show native pinch-zoom image viewer
             iframe.style.display = 'none';
             iframe.src = 'about:blank';
-            img.src = url;
+            img.src = targetUrl;
             imgWrap.style.display = 'flex';
         } else {
-            // Show PDF/doc via Google Docs Viewer (handles cross-origin PDFs)
+            // Show PDF/doc via client-side PDF.js or direct iframe
             imgWrap.style.display = 'none';
             img.src = '';
             var viewerUrl = isPdf
-                ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(rawUrl)
-                : rawUrl;
+                ? 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(targetUrl)
+                : targetUrl;
             iframe.src = viewerUrl;
             iframe.style.display = 'block';
         }
@@ -365,12 +369,12 @@
 
     window.downloadCurrentFile = async function () {
         if (!window.currentViewerUrl) return;
-        var rawUrl = window.currentViewerUrl.replace('/image/upload/', '/raw/upload/');
-        var fileName = window.currentViewerFileName || 'document.pdf';
+        var targetUrl = window.currentViewerUrl;
+        var fileName = window.currentViewerFileName || 'download';
         showToast('Starting download...', 'info');
 
         try {
-            var response = await fetch(rawUrl);
+            var response = await fetch(targetUrl);
             if (!response.ok) throw new Error('Download failed');
             var blob = await response.blob();
             var blobUrl = URL.createObjectURL(blob);
@@ -385,7 +389,7 @@
         } catch (e) {
             // Fallback for CORS or direct trigger
             var a = document.createElement('a');
-            a.href = rawUrl;
+            a.href = targetUrl;
             a.target = '_blank';
             a.download = fileName;
             document.body.appendChild(a);
