@@ -441,9 +441,13 @@
         if (!email) return showToast('Enter your email address', 'error');
 
         setLoading('btn-forgot', true);
+        var redirectUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:') 
+            ? window.location.origin 
+            : 'https://teachers-note-v1.vercel.app';
+
         try {
             var res = await window.supabaseClient.auth.resetPasswordForEmail(email, {
-                redirectTo: window.location.origin
+                redirectTo: redirectUrl
             });
             if (res.error) throw res.error;
             showToast('Password reset link sent to your email!');
