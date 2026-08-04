@@ -1351,17 +1351,12 @@
     window.onload = async function () {
         var hash = window.location.hash || '';
 
-        // 1. Handle error in URL hash (e.g. expired or invalid link)
-        if (hash.includes('error=')) {
-            var params = new URLSearchParams(hash.substring(hash.indexOf('error=')));
-            var errorDesc = params.get('error_description') || 'Password reset link is invalid or has expired.';
-            showToast(decodeURIComponent(errorDesc).replace(/\+/g, ' '), 'error');
-            history.replaceState(null, '', window.location.pathname);
-        }
-
-        // 2. Anti-scanner prefetch protection: intercept #confirmurl=
-        if (hash.indexOf('#confirmurl=') !== -1) {
-            var confirmUrl = decodeURIComponent(hash.substring(hash.indexOf('#confirmurl=') + 12));
+        // 1. Anti-scanner prefetch protection: MUST be first.
+        //    #confirmurl= is anchored to position 0 (=== 0) so it only fires
+        //    when the fragment literally starts with it — no false matches.
+        //    decodeURIComponent handles Go's contextual HTML-escaping of .ConfirmationURL.
+        if (hash.indexOf('#confirmurl=') === 0) {
+            var confirmUrl = decodeURIComponent(hash.substring('#confirmurl='.length));
             showView('view-confirm-reset');
             var btn = document.getElementById('btn-continue-reset');
             if (btn) {
@@ -1372,10 +1367,22 @@
             return;
         }
 
-        // 3. Check if returning from Supabase recovery redirect with type=recovery token
+        // 2. Handle Supabase error redirects (e.g. otp_expired).
+        //    URLSearchParams.get() already decodes — do NOT wrap in decodeURIComponent
+        //    again or it will throw URIError on any bare % in the description.
+        if (hash.includes('error=')) {
+            var errParams = new URLSearchParams(hash.substring(1));
+            var desc = errParams.get('error_description') || 'This reset link is invalid or has expired.';
+            showToast(desc, 'error');
+            history.replaceState(null, '', window.location.pathname);
+            showView('view-forgot-pw');
+            return;
+        }
+
+        // 3. Returning from Supabase recovery redirect (#access_token=...&type=recovery)
         var isPasswordReset = hash.includes('type=recovery') || hash.includes('type=invite');
 
-        // 4. Listen for Supabase auth events
+        // 4. Listen for Supabase PASSWORD_RECOVERY auth event
         window.supabaseClient.auth.onAuthStateChange(function (event, session) {
             if (event === 'PASSWORD_RECOVERY') {
                 showView('view-reset-password');
