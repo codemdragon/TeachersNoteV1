@@ -442,7 +442,9 @@
 
         setLoading('btn-forgot', true);
         try {
-            var res = await window.supabaseClient.auth.resetPasswordForEmail(email);
+            var res = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin
+            });
             if (res.error) throw res.error;
             showToast('Password reset link sent to your email!');
             showView('view-teacher-login');

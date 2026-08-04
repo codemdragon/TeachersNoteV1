@@ -293,21 +293,27 @@ body.is-authenticated #mobile-signout-btn {
     position: relative;
     flex: 1;
     width: 100%;
+    display: grid;
 }
 
 .view {
-    display: none;
+    grid-area: 1 / 1;
     width: 100%;
     min-height: 100%;
     opacity: 0;
-    transition: opacity var(--transition);
+    visibility: hidden;
+    transform: translateY(15px);
+    transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
     z-index: 1;
+    pointer-events: none;
 }
 
 .view.active {
-    display: block;
     opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
     z-index: 10;
+    pointer-events: auto;
 }
 
 .view-content-wrapper {
@@ -1069,22 +1075,30 @@ input::placeholder, textarea::placeholder {
 
 .auth-form-panel {
     flex: 1;
-    display: flex;
+    display: grid;
     align-items: center;
-    justify-content: center;
+    justify-items: center;
     overflow-y: auto;
     min-height: 100vh;
     padding: 1.5rem;
 }
 
 .auth-inner-view {
-    display: none;
+    grid-area: 1 / 1;
     width: 100%;
     max-width: 440px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px);
+    transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+    pointer-events: none;
 }
 
 .auth-inner-view.active {
-    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .auth-switch-link {
