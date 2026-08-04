@@ -12,8 +12,15 @@
 
     var ADMIN_EMAIL = 'codemlabs1@gmail.com';
 
-    // Initialize Supabase Client
-    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Initialize Supabase Client with Implicit Auth Flow (avoids PKCE cross-site verifier loss & browser tracking mitigation issues)
+    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+            flowType: 'implicit',
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: true
+        }
+    });
 
     // App Navigation State
     window.currentView = 'view-role';
