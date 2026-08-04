@@ -12,18 +12,13 @@
 
     var ADMIN_EMAIL = 'codemlabs1@gmail.com';
 
-    // Initialize Supabase Client (PKCE flow with explicit apikey header)
+    // Initialize Supabase Client (PKCE flow)
     window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
             flowType: 'pkce',
             autoRefreshToken: true,
             persistSession: true,
             detectSessionInUrl: true
-        },
-        global: {
-            headers: {
-                apikey: SUPABASE_ANON_KEY
-            }
         }
     });
 
