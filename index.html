@@ -526,7 +526,7 @@
 
                         <!-- Persistent Global Search -->
                         <div class="search-bar-wrap">
-                            <input type="text" class="search-input" placeholder="Search subjects, topics, or materials..." onkeyup="handleGlobalSearch(this.value, 'subjects-list')">
+                            <input type="text" id="teacher-global-search" name="teacher-global-search" aria-label="Search subjects, topics, or materials" class="search-input" placeholder="Search subjects, topics, or materials..." onkeyup="handleGlobalSearch(this.value, 'subjects-list')">
                         </div>
 
                         <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:1rem;">SUBJECTS</div>
@@ -569,7 +569,7 @@
                         </div>
 
                         <div class="search-bar-wrap">
-                            <input type="text" class="search-input" placeholder="Search topics & materials inside this subject..." onkeyup="filterTopics(this.value, 'topics-list')">
+                            <input type="text" id="teacher-subject-search" name="teacher-subject-search" aria-label="Search topics and materials inside this subject" class="search-input" placeholder="Search topics &amp; materials inside this subject..." onkeyup="filterTopics(this.value, 'topics-list')">
                         </div>
 
                         <div id="topics-list"></div>
@@ -664,7 +664,7 @@
                         </div>
 
                         <div class="search-bar-wrap">
-                            <input type="text" class="search-input" placeholder="Search subjects, topics, or materials..." onkeyup="handleGlobalSearch(this.value, 'student-subjects-list')">
+                            <input type="text" id="student-global-search" name="student-global-search" aria-label="Search subjects, topics, or materials" class="search-input" placeholder="Search subjects, topics, or materials..." onkeyup="handleGlobalSearch(this.value, 'student-subjects-list')">
                         </div>
 
                         <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:1rem;">YOUR AUTHORIZED SUBJECTS</div>
@@ -695,7 +695,7 @@
                         </div>
 
                         <div class="search-bar-wrap">
-                            <input type="text" class="search-input" placeholder="Search topics & materials inside this subject..." onkeyup="filterTopics(this.value, 'student-topics-list')">
+                            <input type="text" id="student-subject-search" name="student-subject-search" aria-label="Search topics and materials inside this subject" class="search-input" placeholder="Search topics &amp; materials inside this subject..." onkeyup="filterTopics(this.value, 'student-topics-list')">
                         </div>
 
                         <div id="student-topics-list"></div>

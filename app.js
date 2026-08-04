@@ -12,10 +12,10 @@
 
     var ADMIN_EMAIL = 'codemlabs1@gmail.com';
 
-    // Initialize Supabase Client with Implicit Auth Flow (avoids PKCE cross-site verifier loss & browser tracking mitigation issues)
+    // Initialize Supabase Client (PKCE flow for robust session establishment)
     window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
-            flowType: 'implicit',
+            flowType: 'pkce',
             autoRefreshToken: true,
             persistSession: true,
             detectSessionInUrl: true
@@ -1359,9 +1359,6 @@
         var hash = window.location.hash || '';
 
         // 1. Anti-scanner prefetch protection: MUST be first.
-        //    #confirmurl= is anchored to position 0 (=== 0) so it only fires
-        //    when the fragment literally starts with it — no false matches.
-        //    decodeURIComponent handles Go's contextual HTML-escaping of .ConfirmationURL.
         if (hash.indexOf('#confirmurl=') === 0) {
             var confirmUrl = decodeURIComponent(hash.substring('#confirmurl='.length));
             showView('view-confirm-reset');
@@ -1374,11 +1371,9 @@
             return;
         }
 
-        // 2. Handle Supabase error redirects (e.g. otp_expired).
-        //    URLSearchParams.get() already decodes — do NOT wrap in decodeURIComponent
-        //    again or it will throw URIError on any bare % in the description.
+        // 2. Handle Supabase error redirects (e.g. otp_expired)
         if (hash.includes('error=')) {
-            var errParams = new URLSearchParams(hash.substring(1));
+            var errParams = new URLSearchParams(hash.substring(hash.indexOf('error=')));
             var desc = errParams.get('error_description') || 'This reset link is invalid or has expired.';
             showToast(desc, 'error');
             history.replaceState(null, '', window.location.pathname);
@@ -1386,8 +1381,8 @@
             return;
         }
 
-        // 3. Returning from Supabase recovery redirect (#access_token=...&type=recovery)
-        var isPasswordReset = hash.includes('type=recovery') || hash.includes('type=invite');
+        // 3. Returning from Supabase recovery redirect (#access_token=... or ?code=...)
+        var isPasswordReset = hash.includes('type=recovery') || hash.includes('type=invite') || window.location.search.includes('code=');
 
         // 4. Listen for Supabase PASSWORD_RECOVERY auth event
         window.supabaseClient.auth.onAuthStateChange(function (event, session) {
@@ -1397,8 +1392,11 @@
         });
 
         if (isPasswordReset) {
-            showView('view-reset-password');
-            return;
+            var sessionCheck = await window.supabaseClient.auth.getSession();
+            if (sessionCheck.data && sessionCheck.data.session) {
+                showView('view-reset-password');
+                return;
+            }
         }
 
         var studentSession = localStorage.getItem('student_session');
