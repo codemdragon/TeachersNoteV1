@@ -36,7 +36,7 @@
     // ============================================
     // VIEW GROUPS
     // ============================================
-    var AUTH_VIEWS = ['view-role', 'view-teacher-login', 'view-teacher-signup', 'view-forgot-pw', 'view-student-join', 'view-confirm-email', 'view-teacher-pending', 'view-reset-password', 'view-confirm-reset'];
+    var AUTH_VIEWS = ['view-role', 'view-teacher-login', 'view-teacher-signup', 'view-forgot-pw', 'view-enter-otp', 'view-student-join', 'view-confirm-email', 'view-teacher-pending', 'view-reset-password'];
     var TEACHER_WORKSPACE_VIEWS = ['view-teacher-dashboard', 'view-teacher-topics', 'view-manage-students', 'view-class-settings', 'view-admin-panel'];
     var STUDENT_WORKSPACE_VIEWS = ['view-student-dashboard', 'view-student-topics'];
     var WORKSPACE_VIEWS = TEACHER_WORKSPACE_VIEWS.concat(STUDENT_WORKSPACE_VIEWS);
@@ -461,27 +461,54 @@
         }
     };
 
+    // Store email across the forgot-password → OTP verification steps
+    window._resetEmail = '';
+
     window.handleForgotPassword = async function (e) {
         e.preventDefault();
         var email = document.getElementById('forgot-email').value.trim();
         if (!email) return showToast('Enter your email address', 'error');
 
         setLoading('btn-forgot', true);
-        var redirectUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:') 
-            ? window.location.origin 
-            : 'https://teachers-note-v1.vercel.app';
-
         try {
+            // redirectTo must be the production URL so Supabase records it correctly;
+            // the OTP flow doesn't rely on this URL for the actual token delivery,
+            // but Supabase still validates it against the allowed redirect list.
             var res = await window.supabaseClient.auth.resetPasswordForEmail(email, {
-                redirectTo: redirectUrl
+                redirectTo: 'https://teachers-note-v1.vercel.app'
             });
             if (res.error) throw res.error;
-            showToast('Password reset link sent to your email!');
-            showView('view-teacher-login');
+            window._resetEmail = email;    // remember for verifyOtp step
+            showToast('Reset code sent! Check your email.');
+            showView('view-enter-otp');
         } catch (err) {
             showToast(err.message, 'error');
         } finally {
             setLoading('btn-forgot', false);
+        }
+    };
+
+    window.handleVerifyOtp = async function (e) {
+        e.preventDefault();
+        var token = document.getElementById('otp-code').value.trim();
+        if (!token) return showToast('Enter the 6-digit code from your email', 'error');
+        if (!window._resetEmail) return showToast('Session expired — please request a new code', 'error');
+
+        setLoading('btn-verify-otp', true);
+        try {
+            var res = await window.supabaseClient.auth.verifyOtp({
+                email: window._resetEmail,
+                token: token,
+                type: 'recovery'
+            });
+            if (res.error) throw res.error;
+            // verifyOtp establishes a session → show the set-password screen
+            showView('view-reset-password');
+            showToast('Code verified! Set your new password.');
+        } catch (err) {
+            showToast(err.message || 'Invalid or expired code', 'error');
+        } finally {
+            setLoading('btn-verify-otp', false);
         }
     };
 
@@ -1358,20 +1385,7 @@
     window.onload = async function () {
         var hash = window.location.hash || '';
 
-        // 1. Anti-scanner prefetch protection: MUST be first.
-        if (hash.indexOf('#confirmurl=') === 0) {
-            var confirmUrl = decodeURIComponent(hash.substring('#confirmurl='.length));
-            showView('view-confirm-reset');
-            var btn = document.getElementById('btn-continue-reset');
-            if (btn) {
-                btn.onclick = function () {
-                    window.location.href = confirmUrl;
-                };
-            }
-            return;
-        }
-
-        // 2. Handle Supabase error redirects (e.g. otp_expired)
+        // 1. Handle Supabase error redirects in hash (e.g. stale link from old email)
         if (hash.includes('error=')) {
             var errParams = new URLSearchParams(hash.substring(hash.indexOf('error=')));
             var desc = errParams.get('error_description') || 'This reset link is invalid or has expired.';
@@ -1381,7 +1395,7 @@
             return;
         }
 
-        // 3. Returning from Supabase recovery redirect (#access_token=... or ?code=...)
+        // 2. Returning from Supabase recovery redirect (#access_token=... or ?code=...)
         var isPasswordReset = hash.includes('type=recovery') || hash.includes('type=invite') || window.location.search.includes('code=');
 
         // 4. Listen for Supabase PASSWORD_RECOVERY auth event
