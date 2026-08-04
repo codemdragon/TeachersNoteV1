@@ -29,7 +29,7 @@
     // ============================================
     // VIEW GROUPS
     // ============================================
-    var AUTH_VIEWS = ['view-role', 'view-teacher-login', 'view-teacher-signup', 'view-forgot-pw', 'view-student-join', 'view-confirm-email', 'view-teacher-pending'];
+    var AUTH_VIEWS = ['view-role', 'view-teacher-login', 'view-teacher-signup', 'view-forgot-pw', 'view-student-join', 'view-confirm-email', 'view-teacher-pending', 'view-reset-password'];
     var TEACHER_WORKSPACE_VIEWS = ['view-teacher-dashboard', 'view-teacher-topics', 'view-manage-students', 'view-class-settings', 'view-admin-panel'];
     var STUDENT_WORKSPACE_VIEWS = ['view-student-dashboard', 'view-student-topics'];
     var WORKSPACE_VIEWS = TEACHER_WORKSPACE_VIEWS.concat(STUDENT_WORKSPACE_VIEWS);
@@ -452,6 +452,30 @@
             showToast(err.message, 'error');
         } finally {
             setLoading('btn-forgot', false);
+        }
+    };
+
+    window.handleSetNewPassword = async function (e) {
+        e.preventDefault();
+        var pw = document.getElementById('reset-password').value;
+        var cf = document.getElementById('reset-confirm').value;
+        if (!pw) return showToast('Enter a new password', 'error');
+        if (pw !== cf) return showToast('Passwords do not match', 'error');
+        if (pw.length < 6) return showToast('Password must be at least 6 characters', 'error');
+
+        setLoading('btn-set-password', true);
+        try {
+            var res = await window.supabaseClient.auth.updateUser({ password: pw });
+            if (res.error) throw res.error;
+            showToast('Password updated! Please sign in.');
+            await window.supabaseClient.auth.signOut();
+            // Clear the hash so the token isn't reused
+            history.replaceState(null, '', window.location.pathname);
+            showView('view-teacher-login');
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            setLoading('btn-set-password', false);
         }
     };
 
@@ -1302,6 +1326,14 @@
     // ON LOAD INIT
     // ============================================
     window.onload = async function () {
+        // Listen for Supabase auth events (handles PASSWORD_RECOVERY from email links)
+        window.supabaseClient.auth.onAuthStateChange(function (event, session) {
+            if (event === 'PASSWORD_RECOVERY') {
+                // User clicked the reset link — show the set-new-password screen
+                showView('view-reset-password');
+            }
+        });
+
         var studentSession = localStorage.getItem('student_session');
         if (studentSession) {
             loadStudentDashboard();
