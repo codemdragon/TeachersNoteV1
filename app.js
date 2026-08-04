@@ -27,36 +27,131 @@
     window.viewedDocIds = [];
 
     // ============================================
+    // VIEW GROUPS
+    // ============================================
+    var AUTH_VIEWS = ['view-role', 'view-teacher-login', 'view-teacher-signup', 'view-forgot-pw', 'view-student-join', 'view-confirm-email', 'view-teacher-pending'];
+    var TEACHER_WORKSPACE_VIEWS = ['view-teacher-dashboard', 'view-teacher-topics', 'view-manage-students', 'view-class-settings', 'view-admin-panel'];
+    var STUDENT_WORKSPACE_VIEWS = ['view-student-dashboard', 'view-student-topics'];
+    var WORKSPACE_VIEWS = TEACHER_WORKSPACE_VIEWS.concat(STUDENT_WORKSPACE_VIEWS);
+
+    // ============================================
     // VIEW SWITCHER & RESPONSIVE DESKTOP NAVIGATION
     // ============================================
     window.showView = function (viewId) {
-        var oldView = document.getElementById(window.currentView);
         var newView = document.getElementById(viewId);
         if (!newView) return;
 
-        if (oldView) {
-            oldView.classList.remove('active');
-        }
-        newView.classList.add('active');
-        window.currentView = viewId;
+        // Deactivate whichever top-level view is currently showing
+        // (either the shared auth-shell, or one of the workspace sections)
+        var oldOuterActive = document.querySelector('#view-container > .view.active');
+        if (oldOuterActive) oldOuterActive.classList.remove('active');
 
+        if (AUTH_VIEWS.indexOf(viewId) !== -1) {
+            var authShell = document.getElementById('auth-shell');
+            authShell.classList.add('active');
+
+            var oldInner = document.querySelector('.auth-form-panel .auth-inner-view.active');
+            if (oldInner) oldInner.classList.remove('active');
+            newView.classList.add('active');
+
+            updateAuthBrandPanel(viewId);
+            document.body.classList.remove('is-authenticated');
+        } else {
+            newView.classList.add('active');
+            if (WORKSPACE_VIEWS.indexOf(viewId) !== -1) {
+                document.body.classList.add('is-authenticated');
+            } else {
+                document.body.classList.remove('is-authenticated');
+            }
+        }
+
+        window.currentView = viewId;
         updateDesktopSidebar(viewId);
+        updateTopbarBreadcrumb(viewId);
     };
 
+    // ============================================
+    // AUTH BRAND PANEL (split-screen marketing copy)
+    // ============================================
+    var CHECK_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+    var AUTH_BRAND_CONTENT = {
+        generic: {
+            title: 'A digital classroom for sharing knowledge.',
+            subtitle: 'Organize subjects and topics, share materials, and manage class access — all in one place.',
+            features: ['Organize content by subject & topic', 'Share PDFs, images and YouTube videos', 'Control access with a simple class code']
+        },
+        teacher: {
+            title: 'Run your classroom, your way.',
+            subtitle: 'Create subjects, upload materials, and keep track of who is engaging with your content.',
+            features: ['Approve students and manage access', 'Whitelist emails per subject', 'See document view analytics at a glance']
+        },
+        student: {
+            title: 'Everything your teacher shares, in one place.',
+            subtitle: 'Join with a class code and get instant access to the materials you need.',
+            features: ['Join a class in seconds with a code', 'Read PDFs and watch videos inline', 'Track which materials you have completed']
+        }
+    };
+
+    function updateAuthBrandPanel(viewId) {
+        var group = 'generic';
+        if (['view-teacher-login', 'view-teacher-signup', 'view-forgot-pw', 'view-confirm-email', 'view-teacher-pending'].indexOf(viewId) !== -1) group = 'teacher';
+        if (viewId === 'view-student-join') group = 'student';
+
+        var content = AUTH_BRAND_CONTENT[group];
+        var titleEl = document.getElementById('auth-brand-title');
+        var subEl = document.getElementById('auth-brand-subtitle');
+        var featEl = document.getElementById('auth-brand-features');
+        if (titleEl) titleEl.textContent = content.title;
+        if (subEl) subEl.textContent = content.subtitle;
+        if (featEl) {
+            featEl.innerHTML = content.features.map(function (f) {
+                return '<li><span class="feat-icon">' + CHECK_ICON + '</span><span>' + f + '</span></li>';
+            }).join('');
+        }
+    }
+
+    // ============================================
+    // TOP BAR BREADCRUMB
+    // ============================================
+    var BREADCRUMB_MAP = {
+        'view-teacher-dashboard': '<span>Dashboard</span>',
+        'view-manage-students': '<span class="crumb-muted">Dashboard</span><span class="crumb-sep">/</span><span>Manage Students</span>',
+        'view-class-settings': '<span class="crumb-muted">Dashboard</span><span class="crumb-sep">/</span><span>Class Settings</span>',
+        'view-admin-panel': '<span>Admin Panel</span>',
+        'view-student-dashboard': '<span>My Subjects</span>'
+    };
+
+    function updateTopbarBreadcrumb(viewId) {
+        var el = document.getElementById('topbar-breadcrumb');
+        if (!el) return;
+
+        if (viewId === 'view-teacher-topics') {
+            var subjNameEl = document.getElementById('current-subject-name');
+            var subjName = subjNameEl ? subjNameEl.textContent : 'Subject';
+            el.innerHTML = '<span class="crumb-muted">Dashboard</span><span class="crumb-sep">/</span><span>' + subjName + '</span>';
+            return;
+        }
+        if (viewId === 'view-student-topics') {
+            var sNameEl = document.getElementById('student-current-subject-name');
+            var sName = sNameEl ? sNameEl.textContent : 'Subject';
+            el.innerHTML = '<span class="crumb-muted">My Subjects</span><span class="crumb-sep">/</span><span>' + sName + '</span>';
+            return;
+        }
+        if (BREADCRUMB_MAP[viewId]) {
+            el.innerHTML = BREADCRUMB_MAP[viewId];
+        }
+    }
+
     function updateDesktopSidebar(viewId) {
-        var sidebar = document.getElementById('desktop-sidebar');
-        var mobileSignout = document.getElementById('mobile-signout-btn');
         var navMenu = document.getElementById('desktop-nav-menu');
         var classBadge = document.getElementById('sidebar-class-badge');
         var codeText = document.getElementById('sidebar-code-text');
 
-        var isAuthTeacher = ['view-teacher-dashboard', 'view-teacher-topics', 'view-manage-students', 'view-class-settings', 'view-admin-panel'].includes(viewId);
-        var isAuthStudent = ['view-student-dashboard', 'view-student-topics'].includes(viewId);
+        var isAuthTeacher = TEACHER_WORKSPACE_VIEWS.indexOf(viewId) !== -1;
+        var isAuthStudent = STUDENT_WORKSPACE_VIEWS.indexOf(viewId) !== -1;
 
         if (isAuthTeacher || isAuthStudent) {
-            sidebar.style.display = 'flex';
-            if (mobileSignout) mobileSignout.style.display = 'inline-flex';
-
             if (isAuthTeacher) {
                 if (classBadge) classBadge.style.display = 'block';
                 if (codeText) codeText.textContent = window.currentClassCode || '------';
@@ -91,10 +186,9 @@
                     </li>
                 `;
             }
-        } else {
-            sidebar.style.display = 'none';
-            if (mobileSignout) mobileSignout.style.display = 'none';
         }
+        // Sidebar/topbar visibility itself is driven by the body.is-authenticated
+        // class (set in showView), so no inline style toggling is needed here.
     }
 
     // ============================================
@@ -199,6 +293,100 @@
     }
 
     // ============================================
+    // SIGNUP STEPPER, PASSWORD STRENGTH & VISIBILITY
+    // ============================================
+    function setSignupStep(step) {
+        document.querySelectorAll('.signup-step').forEach(function (el) { el.classList.remove('active'); });
+        var target = document.querySelector('.signup-step[data-signup-step="' + step + '"]');
+        if (target) target.classList.add('active');
+
+        document.querySelectorAll('#signup-stepper .step-item').forEach(function (el) {
+            var s = parseInt(el.getAttribute('data-step'), 10);
+            el.classList.toggle('active', s <= step);
+        });
+    }
+
+    window.goToSignupStep = function (step) {
+        if (step === 2) {
+            var name = document.getElementById('signup-name').value.trim();
+            var email = document.getElementById('signup-email').value.trim();
+            if (!name || !email) return showToast('Please enter your name and email', 'error');
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showToast('Enter a valid email address', 'error');
+        }
+        setSignupStep(step);
+    };
+
+    window.resetSignupForm = function () {
+        var form = document.getElementById('form-teacher-signup');
+        if (form) form.reset();
+        setSignupStep(1);
+
+        var fill = document.getElementById('pw-strength-fill');
+        var label = document.getElementById('pw-strength-label');
+        var hint = document.getElementById('pw-match-hint');
+        if (fill) fill.style.width = '0%';
+        if (label) { label.textContent = 'Enter a password'; label.style.color = 'var(--text-muted)'; }
+        if (hint) hint.textContent = '';
+    };
+
+    window.evaluatePasswordStrength = function (pw) {
+        var fill = document.getElementById('pw-strength-fill');
+        var label = document.getElementById('pw-strength-label');
+        if (fill && label) {
+            var score = 0;
+            if (pw.length >= 6) score++;
+            if (pw.length >= 10) score++;
+            if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+            if (/[0-9]/.test(pw)) score++;
+            if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+            var levels = ['Too short', 'Weak', 'Fair', 'Good', 'Strong', 'Very strong'];
+            var colors = ['#ef4444', '#ef4444', '#f59e0b', '#f59e0b', '#22c55e', '#22c55e'];
+            var pct = pw.length === 0 ? 0 : Math.min(100, (score / 5) * 100);
+
+            fill.style.width = pct + '%';
+            fill.style.background = colors[score];
+            label.textContent = pw.length === 0 ? 'Enter a password' : levels[score];
+            label.style.color = pw.length === 0 ? 'var(--text-muted)' : colors[score];
+        }
+        checkPasswordMatch();
+    };
+
+    window.checkPasswordMatch = function () {
+        var pwEl = document.getElementById('signup-password');
+        var cfEl = document.getElementById('signup-confirm');
+        var hint = document.getElementById('pw-match-hint');
+        if (!pwEl || !cfEl || !hint) return;
+
+        var cf = cfEl.value;
+        if (!cf) { hint.textContent = ''; return; }
+
+        if (pwEl.value === cf) {
+            hint.textContent = 'Passwords match';
+            hint.style.color = 'var(--success)';
+        } else {
+            hint.textContent = 'Passwords do not match';
+            hint.style.color = 'var(--danger)';
+        }
+    };
+
+    window.togglePasswordVisibility = function (inputId, btn) {
+        var input = document.getElementById(inputId);
+        if (!input) return;
+        var eye = btn.querySelector('.eye-icon');
+        var eyeOff = btn.querySelector('.eye-off-icon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (eye) eye.style.display = 'none';
+            if (eyeOff) eyeOff.style.display = 'block';
+        } else {
+            input.type = 'password';
+            if (eye) eye.style.display = 'block';
+            if (eyeOff) eyeOff.style.display = 'none';
+        }
+    };
+
+    // ============================================
     // TEACHER AUTHENTICATION
     // ============================================
     window.handleTeacherSignup = async function (e) {
@@ -220,6 +408,7 @@
             });
             if (res.error) throw res.error;
             showView('view-confirm-email');
+            resetSignupForm();
         } catch (err) {
             showToast(err.message, 'error');
         } finally {
@@ -289,6 +478,7 @@
         var res = await window.supabaseClient.from('profiles').select('full_name').eq('id', user.id).single();
         var name = res.data?.full_name || 'Teacher';
         document.getElementById('teacher-name').textContent = name;
+        updateSidebarProfile(name, isAdmin ? 'Administrator' : 'Teacher Account');
 
         // Get or Create assigned Class
         var classRes = await window.supabaseClient.from('classes').select('id, class_code').eq('teacher_id', user.id).single();
@@ -310,7 +500,41 @@
         document.getElementById('stat-class-code').textContent = window.currentClassCode || '---';
 
         await loadSubjects();
+        await refreshPendingCount();
         showView('view-teacher-dashboard');
+    }
+
+    // ============================================
+    // SIDEBAR PROFILE & PENDING-APPROVAL INDICATORS
+    // ============================================
+    function updateSidebarProfile(displayName, roleLabel) {
+        var avatarEl = document.getElementById('sidebar-avatar');
+        var nameEl = document.getElementById('sidebar-user-name');
+        var roleEl = document.getElementById('sidebar-user-role');
+        var initials = (displayName || '?').trim().charAt(0).toUpperCase();
+        if (avatarEl) avatarEl.textContent = initials || '?';
+        if (nameEl) nameEl.textContent = displayName || '';
+        if (roleEl) roleEl.textContent = roleLabel || '';
+    }
+
+    async function refreshPendingCount() {
+        if (!window.currentClassId) return;
+        try {
+            var res = await window.supabaseClient.from('students').select('id', { count: 'exact', head: true }).eq('class_id', window.currentClassId).eq('status', 'pending');
+            var count = res.count || 0;
+
+            var statEl = document.getElementById('stat-pending-count');
+            if (statEl) statEl.textContent = count;
+
+            var pill = document.getElementById('topbar-pending-pill');
+            if (pill) {
+                var pillCount = pill.querySelector('.pill-count');
+                if (pillCount) pillCount.textContent = count;
+                pill.style.display = count > 0 ? 'inline-flex' : 'none';
+            }
+        } catch (e) {
+            // Non-critical — leave existing counts as-is
+        }
     }
 
     // ============================================
@@ -805,6 +1029,7 @@
 
         window.currentStudentId = session.student_id;
         document.getElementById('student-display-name').textContent = session.name;
+        updateSidebarProfile(session.name, 'Student Account');
 
         var statusRes = await window.supabaseClient.from('students').select('status, email').eq('id', session.student_id).single();
         if (statusRes.error || !statusRes.data) return showView('view-role');
@@ -964,14 +1189,17 @@
 
         if (res.data && res.data.length > 0) {
             list.innerHTML = res.data.map(s => `
-                <div class="role-card" style="cursor:default; margin-bottom:0.8rem;">
-                    <div class="role-info">
-                        <h3>${s.display_name} ${s.email ? `(${s.email})` : ''}</h3>
-                        <span>Joined ${new Date(s.created_at || Date.now()).toLocaleDateString()}</span>
+                <div class="data-row">
+                    <div class="data-row-main">
+                        <div class="data-row-avatar">${(s.display_name || '?').trim().charAt(0).toUpperCase()}</div>
+                        <div class="data-row-info">
+                            <h3>${s.display_name} ${s.email ? `<span style="font-weight:400; color:var(--text-muted);">(${s.email})</span>` : ''}</h3>
+                            <span>Joined ${new Date(s.created_at || Date.now()).toLocaleDateString()} &middot; <span class="status-badge ${s.status}">${s.status}</span></span>
+                        </div>
                     </div>
-                    <div style="margin-left:auto; display:flex; gap:8px;">
-                        ${s.status !== 'approved' ? `<button class="btn" style="padding:6px 14px; font-size:0.85rem; margin-top:0;" onclick="updateStudentStatus('${s.id}', 'approved')">Approve</button>` : ''}
-                        ${s.status !== 'blocked' ? `<button class="btn btn-outline" style="padding:6px 14px; font-size:0.85rem; margin-top:0; border-color:var(--danger); color:var(--danger);" onclick="updateStudentStatus('${s.id}', 'blocked')">Block</button>` : ''}
+                    <div class="data-row-actions">
+                        ${s.status !== 'approved' ? `<button class="btn" style="padding:6px 14px; font-size:0.85rem; margin-top:0; width:auto;" onclick="updateStudentStatus('${s.id}', 'approved')">Approve</button>` : ''}
+                        ${s.status !== 'blocked' ? `<button class="btn btn-outline" style="padding:6px 14px; font-size:0.85rem; margin-top:0; width:auto; border-color:var(--danger); color:var(--danger);" onclick="updateStudentStatus('${s.id}', 'blocked')">Block</button>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -986,6 +1214,7 @@
         else {
             showToast('Student ' + newStatus);
             loadStudents(newStatus);
+            refreshPendingCount();
         }
     };
 
@@ -1039,14 +1268,17 @@
 
         if (res.data && res.data.length > 0) {
             list.innerHTML = res.data.map(t => `
-                <div class="role-card" style="cursor:default; margin-bottom:0.8rem;">
-                    <div class="role-info">
-                        <h3>${t.full_name || 'Unknown'}</h3>
-                        <span>Signed up ${new Date(t.created_at).toLocaleDateString()}</span>
+                <div class="data-row">
+                    <div class="data-row-main">
+                        <div class="data-row-avatar">${(t.full_name || '?').trim().charAt(0).toUpperCase()}</div>
+                        <div class="data-row-info">
+                            <h3>${t.full_name || 'Unknown'}</h3>
+                            <span>Signed up ${new Date(t.created_at).toLocaleDateString()} &middot; <span class="status-badge ${isApproved ? 'approved' : 'pending'}">${isApproved ? 'approved' : 'pending'}</span></span>
+                        </div>
                     </div>
-                    <div style="margin-left:auto; display:flex; gap:8px;">
-                        ${!isApproved ? `<button class="btn" style="padding:6px 14px; font-size:0.85rem; margin-top:0;" onclick="updateTeacherStatus('${t.id}', true)">Approve</button>` : ''}
-                        ${isApproved ? `<button class="btn btn-outline" style="padding:6px 14px; font-size:0.85rem; margin-top:0; border-color:var(--danger); color:var(--danger);" onclick="updateTeacherStatus('${t.id}', false)">Revoke</button>` : ''}
+                    <div class="data-row-actions">
+                        ${!isApproved ? `<button class="btn" style="padding:6px 14px; font-size:0.85rem; margin-top:0; width:auto;" onclick="updateTeacherStatus('${t.id}', true)">Approve</button>` : ''}
+                        ${isApproved ? `<button class="btn btn-outline" style="padding:6px 14px; font-size:0.85rem; margin-top:0; width:auto; border-color:var(--danger); color:var(--danger);" onclick="updateTeacherStatus('${t.id}', false)">Revoke</button>` : ''}
                     </div>
                 </div>
             `).join('');
