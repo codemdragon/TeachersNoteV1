@@ -1308,12 +1308,22 @@
     };
 
     window.updateStudentStatus = async function (studentId, newStatus) {
-        var res = await window.supabaseClient.from('students').update({ status: newStatus }).eq('id', studentId);
-        if (res.error) showToast(res.error.message, 'error');
-        else {
-            showToast('Student ' + newStatus);
-            loadStudents(newStatus);
-            refreshPendingCount();
+        // Detect currently active tab (pending, approved, or blocked)
+        var currentTab = 'pending';
+        var activeTab = document.querySelector('#view-manage-students .btn-ghost[style*="accent"]');
+        if (activeTab && activeTab.id) {
+            currentTab = activeTab.id.replace('tab-', '');
+        }
+
+        var res = await window.supabaseClient.from('students').update({ status: newStatus }).eq('id', studentId).select();
+        if (res.error) {
+            showToast(res.error.message, 'error');
+        } else if (!res.data || res.data.length === 0) {
+            showToast('Could not update student status. Check database permissions.', 'error');
+        } else {
+            showToast('Student ' + newStatus + '!');
+            loadStudents(currentTab);
+            await refreshPendingCount();
         }
     };
 
