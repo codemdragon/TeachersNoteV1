@@ -37,7 +37,9 @@
 
             <div class="sidebar-footer">
                 <div class="class-badge-box" id="sidebar-class-badge" style="display:none;">
-                    <label>Class Code</label>
+                    <span class="badge-label"
+                        style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:2px;">Class
+                        Code</span>
                     <div class="code-val" id="sidebar-code-text">------</div>
                 </div>
 
@@ -117,7 +119,9 @@
                 </ul>
                 <div class="sidebar-footer" style="margin-top:auto;">
                     <div class="class-badge-box" id="mobile-sidebar-class-badge" style="display:none;">
-                        <label>Class Code</label>
+                        <span class="badge-label"
+                            style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:2px;">Class
+                            Code</span>
                         <div class="code-val" id="mobile-sidebar-code-text">------</div>
                     </div>
                     <div class="sidebar-profile" id="mobile-sidebar-profile">
@@ -942,11 +946,13 @@
                             style="display:none; background:var(--bg-surface); padding:1.2rem; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1.5rem;">
                             <h3 style="font-size:1rem; margin-bottom:1rem;">Email Whitelist & Subject Permissions</h3>
                             <div class="form-group">
-                                <label>Student Email</label>
+                                <label for="input-whitelist-email">Student Email</label>
                                 <input type="email" id="input-whitelist-email" placeholder="student@school.edu">
                             </div>
                             <div style="margin-bottom:1rem;">
-                                <label style="margin-bottom:6px;">Subject Access Rights:</label>
+                                <span
+                                    style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:6px; color:var(--text-main);">Subject
+                                    Access Rights:</span>
                                 <div id="whitelist-subject-checks"
                                     style="display:flex; flex-direction:column; gap:6px; background:var(--bg-input); padding:10px; border-radius:8px; border:1px solid var(--border);">
                                 </div>
@@ -955,7 +961,9 @@
                                 Email</button>
 
                             <div style="margin-top:1.2rem;">
-                                <label>Authorized Whitelist</label>
+                                <span
+                                    style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:6px; color:var(--text-main);">Authorized
+                                    Whitelist</span>
                                 <div id="whitelist-list"
                                     style="max-height:200px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; padding:6px; background:var(--bg-input);">
                                 </div>
@@ -966,12 +974,12 @@
                             style="background:var(--bg-surface); padding:1.2rem; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1.5rem;">
                             <h3 style="font-size:1rem; margin-bottom:1rem;">Registration Window</h3>
                             <div class="form-group">
-                                <label>Window Opens</label>
+                                <label for="setting-signup-start">Window Opens</label>
                                 <input type="datetime-local" id="setting-signup-start"
                                     onchange="updateClassSetting('signup_window_start', this.value)">
                             </div>
                             <div class="form-group">
-                                <label>Window Closes</label>
+                                <label for="setting-signup-end">Window Closes</label>
                                 <input type="datetime-local" id="setting-signup-end"
                                     onchange="updateClassSetting('signup_window_end', this.value)">
                             </div>
@@ -1139,7 +1147,7 @@
 
             <!-- File upload section -->
             <div class="form-group" id="upload-file-section">
-                <label style="display:flex; align-items:center; gap:8px;">
+                <label for="input-file" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                         <polyline points="14 2 14 8 20 8"></polyline>
@@ -1161,7 +1169,7 @@
 
             <!-- YouTube section -->
             <div class="form-group" id="upload-youtube-section">
-                <label style="display:flex; align-items:center; gap:8px;">
+                <label for="input-youtube" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="2">
                         <rect x="2" y="7" width="20" height="14" rx="3" ry="3"></rect>
                         <path d="m10 10 5 3-5 3V10z" fill="#ff4444" stroke="none"></path>
@@ -1186,7 +1194,8 @@
             <div class="viewer-toolbar">
                 <h3 id="pdf-modal-title" class="viewer-title">Document Preview</h3>
                 <div class="viewer-actions">
-                    <a id="viewer-download-btn" class="viewer-btn" title="Download" download>
+                    <button id="viewer-download-btn" class="viewer-btn" title="Download"
+                        onclick="downloadCurrentFile()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1194,7 +1203,7 @@
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                         Download
-                    </a>
+                    </button>
                     <a id="viewer-open-btn" target="_blank" rel="noopener" class="viewer-btn" title="Open in browser">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">

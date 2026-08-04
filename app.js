@@ -306,7 +306,12 @@
     // ============================================
     // MEDIA VIEWER (PDF, IMAGE & YOUTUBE)
     // ============================================
+    window.currentViewerUrl = '';
+    window.currentViewerFileName = '';
+
     window.openDocument = function (url, fileName, type) {
+        if (!url) return;
+
         // Handle YouTube videos
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
             var videoId = getYouTubeId(url);
@@ -317,21 +322,19 @@
             }
         }
 
-        // Set title and raw URL for open/download buttons
+        // Fix Cloudinary PDF URLs: /image/upload/ → /raw/upload/ so browser opens natively
+        var rawUrl = url.replace('/image/upload/', '/raw/upload/');
+        window.currentViewerUrl = rawUrl;
+        window.currentViewerFileName = fileName || 'document.pdf';
+
         var modalTitle = document.getElementById('pdf-modal-title');
         var openBtn = document.getElementById('viewer-open-btn');
-        var dlBtn = document.getElementById('viewer-download-btn');
         var imgWrap = document.getElementById('viewer-image-wrap');
         var img = document.getElementById('viewer-img');
         var iframe = document.getElementById('pdf-iframe');
 
         if (modalTitle) modalTitle.textContent = fileName || 'Preview';
-
-        // Fix Cloudinary PDF URLs: /image/upload/ → /raw/upload/ so browser opens natively
-        var rawUrl = url.replace('/image/upload/', '/raw/upload/');
-
         if (openBtn) openBtn.href = rawUrl;
-        if (dlBtn) { dlBtn.href = rawUrl; dlBtn.setAttribute('download', fileName || 'download'); }
 
         // Detect image types
         var isImage = /\.(png|jpe?g|gif|webp|svg|bmp|tiff?|avif)$/i.test(url)
@@ -351,13 +354,44 @@
             imgWrap.style.display = 'none';
             img.src = '';
             var viewerUrl = isPdf
-                ? 'https://docs.google.com/viewer?url=' + encodeURIComponent(rawUrl) + '&embedded=true'
+                ? 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(rawUrl)
                 : rawUrl;
             iframe.src = viewerUrl;
             iframe.style.display = 'block';
         }
 
         openModal('modal-pdf-viewer');
+    };
+
+    window.downloadCurrentFile = async function () {
+        if (!window.currentViewerUrl) return;
+        var rawUrl = window.currentViewerUrl.replace('/image/upload/', '/raw/upload/');
+        var fileName = window.currentViewerFileName || 'document.pdf';
+        showToast('Starting download...', 'info');
+
+        try {
+            var response = await fetch(rawUrl);
+            if (!response.ok) throw new Error('Download failed');
+            var blob = await response.blob();
+            var blobUrl = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 10000);
+            showToast('Download complete!');
+        } catch (e) {
+            // Fallback for CORS or direct trigger
+            var a = document.createElement('a');
+            a.href = rawUrl;
+            a.target = '_blank';
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
     };
 
     window.toggleViewerFullscreen = function () {
@@ -1041,7 +1075,11 @@
                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                 formData.append('folder', 'TeachersNote');
 
-                var uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
+                var isRaw = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf') ||
+                    file.type.includes('word') || file.type.includes('presentation') || file.name.endsWith('.docx') || file.name.endsWith('.pptx');
+                var resourceType = isRaw ? 'raw' : 'auto';
+
+                var uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`, {
                     method: 'POST',
                     body: formData
                 });
