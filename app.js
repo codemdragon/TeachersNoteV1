@@ -29,7 +29,7 @@
     // ============================================
     // VIEW GROUPS
     // ============================================
-    var AUTH_VIEWS = ['view-role', 'view-teacher-login', 'view-teacher-signup', 'view-forgot-pw', 'view-student-join', 'view-confirm-email', 'view-teacher-pending', 'view-reset-password'];
+    var AUTH_VIEWS = ['view-role', 'view-teacher-login', 'view-teacher-signup', 'view-forgot-pw', 'view-student-join', 'view-confirm-email', 'view-teacher-pending', 'view-reset-password', 'view-confirm-reset'];
     var TEACHER_WORKSPACE_VIEWS = ['view-teacher-dashboard', 'view-teacher-topics', 'view-manage-students', 'view-class-settings', 'view-admin-panel'];
     var STUDENT_WORKSPACE_VIEWS = ['view-student-dashboard', 'view-student-topics'];
     var WORKSPACE_VIEWS = TEACHER_WORKSPACE_VIEWS.concat(STUDENT_WORKSPACE_VIEWS);
@@ -1330,20 +1330,39 @@
     // ON LOAD INIT
     // ============================================
     window.onload = async function () {
-        // 1. Check synchronously if the URL hash contains a password recovery token
-        var isPasswordReset = window.location.hash && (
-            window.location.hash.includes('type=recovery') || 
-            window.location.hash.includes('type=invite')
-        );
+        var hash = window.location.hash || '';
 
-        // 2. Listen for Supabase auth events
+        // 1. Handle error in URL hash (e.g. expired or invalid link)
+        if (hash.includes('error=')) {
+            var params = new URLSearchParams(hash.substring(hash.indexOf('error=')));
+            var errorDesc = params.get('error_description') || 'Password reset link is invalid or has expired.';
+            showToast(decodeURIComponent(errorDesc).replace(/\+/g, ' '), 'error');
+            history.replaceState(null, '', window.location.pathname);
+        }
+
+        // 2. Anti-scanner prefetch protection: intercept #confirmurl=
+        if (hash.indexOf('#confirmurl=') !== -1) {
+            var confirmUrl = decodeURIComponent(hash.substring(hash.indexOf('#confirmurl=') + 12));
+            showView('view-confirm-reset');
+            var btn = document.getElementById('btn-continue-reset');
+            if (btn) {
+                btn.onclick = function () {
+                    window.location.href = confirmUrl;
+                };
+            }
+            return;
+        }
+
+        // 3. Check if returning from Supabase recovery redirect with type=recovery token
+        var isPasswordReset = hash.includes('type=recovery') || hash.includes('type=invite');
+
+        // 4. Listen for Supabase auth events
         window.supabaseClient.auth.onAuthStateChange(function (event, session) {
             if (event === 'PASSWORD_RECOVERY') {
                 showView('view-reset-password');
             }
         });
 
-        // 3. If resetting password, show reset screen and stop standard navigation
         if (isPasswordReset) {
             showView('view-reset-password');
             return;
